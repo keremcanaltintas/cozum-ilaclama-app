@@ -25,6 +25,22 @@ export async function POST(request) {
             );
         `;
 
+        // 1b. Tablo boşsa varsayılan kullanıcıları otomatik ekle (Self-Seeding)
+        const countRes = await sql`SELECT COUNT(*)::int as count FROM kullanicilar;`;
+        if (countRes.rows[0].count === 0) {
+            const hashKadir = await hashPassword("kadir12345.");
+            const hashKerem = await hashPassword("kerem0205KA");
+            
+            await sql`
+                INSERT INTO kullanicilar (email, password_hash, isim, rol)
+                VALUES ('usakcozumilaclama', ${hashKadir}, 'Böcek Kadir', 'admin');
+            `;
+            await sql`
+                INSERT INTO kullanicilar (email, password_hash, isim, rol)
+                VALUES ('kerem0205', ${hashKerem}, 'Kerem', 'admin');
+            `;
+        }
+
         // 2. Kullanıcıyı sorgula
         const userRes = await sql`
             SELECT * FROM kullanicilar WHERE email = ${normalizedEmail};
