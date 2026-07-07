@@ -93,7 +93,7 @@ export default function OdemelerPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 whitespace-nowrap">
                                         <th className="py-4 px-6">Müşteri Adı</th>
                                         <th className="py-4 px-6">Ödeme Tipi</th>
                                         <th className="py-4 px-6 text-right">Ödenen Miktar</th>
@@ -104,7 +104,7 @@ export default function OdemelerPage() {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {data.odemelerListesi.map((ode) => (
-                                        <tr key={ode.id} className="hover:bg-slate-50/50 text-slate-700 transition">
+                                        <tr key={ode.id} className="hover:bg-slate-50/50 text-slate-700 transition whitespace-nowrap">
                                             <td className="py-4 px-6 font-bold text-slate-800 text-sm">
                                                 {ode.musteri_isim}
                                             </td>

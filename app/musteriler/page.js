@@ -136,7 +136,7 @@ export default function MusterilerPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 whitespace-nowrap">
                                         <th className="py-4 px-6">Müşteri Adı / Ünvanı</th>
                                         <th className="py-4 px-6">Ziyaret Günleri</th>
                                         <th className="py-4 px-6 text-right">Aylık Ücret</th>
@@ -146,12 +146,12 @@ export default function MusterilerPage() {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
                                     {filteredClients.map((client) => (
-                                        <tr key={client.id} className="hover:bg-slate-50/50 transition">
+                                        <tr key={client.id} className="hover:bg-slate-50/50 transition whitespace-nowrap">
                                             <td className="py-4 px-6 font-bold text-slate-800">
                                                 {client.isim}
                                             </td>
                                             <td className="py-4 px-6 font-semibold text-slate-500 text-xs">
-                                                <span className="bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg">
+                                                <span className="bg-slate-50 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg inline-block">
                                                     {renderGunler(client)}
                                                 </span>
                                             </td>

@@ -190,7 +190,7 @@ export default function RaporlarPage() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-slate-50/20 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase">
+                                        <tr className="bg-slate-50/20 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase whitespace-nowrap">
                                             <th className="py-4 px-6">Müşteri Adı</th>
                                             <th className="py-4 px-6">Ödeme Tipi</th>
                                             <th className="py-4 px-6 text-right">Ödenen Miktar</th>
@@ -206,7 +206,7 @@ export default function RaporlarPage() {
                                             </tr>
                                         ) : (
                                             data.odemelerListesi.map((log) => (
-                                                <tr key={log.id} className="hover:bg-slate-50/50 transition">
+                                                <tr key={log.id} className="hover:bg-slate-50/50 transition whitespace-nowrap">
                                                     <td className="py-4 px-6 font-bold text-slate-800">{log.musteri_isim}</td>
                                                     <td className="py-4 px-6">
                                                         <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${log.odeme_tipi === 'TAM' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
@@ -229,7 +229,7 @@ export default function RaporlarPage() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-slate-50/20 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase">
+                                        <tr className="bg-slate-50/20 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase whitespace-nowrap">
                                             <th className="py-4 px-6">Müşteri Adı</th>
                                             <th className="py-4 px-6">Hizmet Ücreti</th>
                                             <th className="py-4 px-6 text-right">Bekleyen Borç Tutarı</th>
@@ -243,7 +243,7 @@ export default function RaporlarPage() {
                                             </tr>
                                         ) : (
                                             data.bekleyenlerListesi.map((client) => (
-                                                <tr key={client.id} className="hover:bg-slate-50/50 transition">
+                                                <tr key={client.id} className="hover:bg-slate-50/50 transition whitespace-nowrap">
                                                     <td className="py-4 px-6 font-bold text-slate-800">{client.isim}</td>
                                                     <td className="py-4 px-6 font-medium text-slate-400">₺{client.aylik_ucret}</td>
                                                     <td className="py-4 px-6 text-right text-rose-600 font-extrabold text-base">₺{client.kalan_bakiye}</td>
@@ -283,7 +283,7 @@ export default function RaporlarPage() {
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left border-collapse">
                                             <thead>
-                                                <tr className="bg-slate-50/10 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase">
+                                                <tr className="bg-slate-50/10 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase whitespace-nowrap">
                                                     <th className="py-4 px-6">Müşteri Adı</th>
                                                     <th className="py-4 px-6">Ödeme Tipi</th>
                                                     <th className="py-4 px-6 text-right">Ödenen Miktar</th>
@@ -292,7 +292,7 @@ export default function RaporlarPage() {
                                             </thead>
                                             <tbody className="divide-y divide-slate-100 text-slate-700 text-sm">
                                                 {data.odemelerListesi.slice(0, 5).map((log) => (
-                                                    <tr key={log.id} className="hover:bg-slate-50/50 transition">
+                                                    <tr key={log.id} className="hover:bg-slate-50/50 transition whitespace-nowrap">
                                                         <td className="py-4 px-6 font-bold text-slate-800">{log.musteri_isim}</td>
                                                         <td className="py-4 px-6">
                                                             <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${log.odeme_tipi === 'TAM' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>

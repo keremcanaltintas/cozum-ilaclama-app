@@ -140,7 +140,7 @@ export default function BugunGidilenlerPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase">
+                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase whitespace-nowrap">
                                         <th className="py-4 px-6">Müşteri Adı</th>
                                         <th className="py-4 px-6">Ödeme Durumu</th>
                                         <th className="py-4 px-6 text-center">Toplam Ziyaret</th>
@@ -154,7 +154,7 @@ export default function BugunGidilenlerPage() {
                                     {visitedList.map((client) => {
                                         const isPaid = client.durum === 'Ödendi' || Number(client.kalan_bakiye) <= 0;
                                         return (
-                                            <tr key={`${client.is_gunluk ? 'g' : 'r'}-${client.id}`} className="hover:bg-slate-50/50 text-slate-700 transition text-sm">
+                                            <tr key={`${client.is_gunluk ? 'g' : 'r'}-${client.id}`} className="hover:bg-slate-50/50 text-slate-700 transition text-sm whitespace-nowrap">
                                                 <td className="py-4 px-6 font-bold text-slate-800">
                                                     <div>{client.isim}</div>
                                                     {client.is_gunluk && (
