@@ -8,11 +8,25 @@ export async function GET(request) {
     const gun = searchParams.get("gun") || "6";
 
     // Buluttaki Neon veritabanından müşterileri çekiyoruz
-    const { rows } = await sql`
-            SELECT * FROM musteriler 
-            WHERE ${parseInt(gun)} = ANY(ziyaret_gunleri) OR durum = 'Bekliyor'
-            ORDER BY id ASC
-        `;
+    let rows;
+    try {
+      // Önce yeni ziyaret_gunleri dizisini sorgulamayı deniyoruz
+      const result = await sql`
+        SELECT * FROM musteriler 
+        WHERE ${parseInt(gun)} = ANY(ziyaret_gunleri) OR durum = 'Bekliyor'
+        ORDER BY id ASC
+      `;
+      rows = result.rows;
+    } catch (dbError) {
+      console.warn("ziyaret_gunleri sütunu bulunamadı, planlanan_gun sütununa geri dönülüyor:", dbError.message);
+      // Migration henüz yapılmadıysa eski planlanan_gun sütununu sorguluyoruz
+      const result = await sql`
+        SELECT * FROM musteriler 
+        WHERE planlanan_gun = ${parseInt(gun)} OR durum = 'Bekliyor'
+        ORDER BY id ASC
+      `;
+      rows = result.rows;
+    }
 
     // Verileri ön yüze sapasağlam paketleyip gönderiyoruz
     return NextResponse.json(rows);

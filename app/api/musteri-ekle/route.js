@@ -18,10 +18,21 @@ export async function POST(request) {
 
         // Veritabanına yeni müşteriyi ekleme sorgusu
         // kalan_bakiye başlangıçta aylık ücrete eşit ayarlanır
-        await sql`
-            INSERT INTO musteriler (isim, aylik_ucret, ziyaret_gunleri, durum, kalan_bakiye)
-            VALUES (${isim}, ${parseInt(aylik_ucret)}, ${parsedGunler}, 'Bekliyor', ${parseInt(aylik_ucret)})
-        `;
+        try {
+            // Önce yeni ziyaret_gunleri dizisiyle kaydetmeyi deniyoruz
+            await sql`
+                INSERT INTO musteriler (isim, aylik_ucret, ziyaret_gunleri, durum, kalan_bakiye)
+                VALUES (${isim}, ${parseInt(aylik_ucret)}, ${parsedGunler}, 'Bekliyor', ${parseInt(aylik_ucret)})
+            `;
+        } catch (dbError) {
+            console.warn("ziyaret_gunleri sütunu bulunamadı, planlanan_gun alanına geri dönülüyor:", dbError.message);
+            // Migration henüz yapılmadıysa dizinin ilk gününü planlanan_gun olarak kaydediyoruz
+            const tekilGun = parsedGunler[0];
+            await sql`
+                INSERT INTO musteriler (isim, aylik_ucret, planlanan_gun, durum, kalan_bakiye)
+                VALUES (${isim}, ${parseInt(aylik_ucret)}, ${tekilGun}, 'Bekliyor', ${parseInt(aylik_ucret)})
+            `;
+        }
 
         return NextResponse.json({ mesaj: "Müşteri başarıyla kaydedildi!" }, { status: 200 });
     } catch (error) {
