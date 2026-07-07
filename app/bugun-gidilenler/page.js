@@ -61,10 +61,12 @@ export default function BugunGidilenlerPage() {
         }
     };
 
-    const formatTime = (dateStr) => {
+    const formatDateTime = (dateStr) => {
         try {
             const d = new Date(dateStr);
-            return d.toLocaleTimeString('tr-TR', {
+            return d.toLocaleString('tr-TR', {
+                day: '2-digit',
+                month: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit'
             });
@@ -78,8 +80,8 @@ export default function BugunGidilenlerPage() {
             {/* Sayfa Başlığı */}
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800">Bugün Gidilen Müşteriler</h1>
-                    <p className="text-xs text-slate-400 font-medium">Uşak Çözüm Bugünkü Saha Kayıtları</p>
+                    <h1 className="text-xl font-bold text-slate-800">Ziyaret Edilen Müşteriler</h1>
+                    <p className="text-xs text-slate-400 font-medium">Uşak Çözüm Ziyaret ve Tahsilat Geçmişi</p>
                 </div>
                 <button 
                     onClick={fetchVisited}
@@ -93,7 +95,7 @@ export default function BugunGidilenlerPage() {
             {!loading && !error && (
                 <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6 flex items-center justify-between">
                     <div>
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Bugün Ziyaret Edilen Müşteri Sayısı</h3>
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Toplam Ziyaret Edilen Müşteri Sayısı</h3>
                         <span className="text-2xl font-black text-emerald-700">{visitedList.length} Müşteri</span>
                     </div>
                     <div className="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold border border-emerald-100">
@@ -141,9 +143,10 @@ export default function BugunGidilenlerPage() {
                                     <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 tracking-wider border-b border-slate-100 uppercase">
                                         <th className="py-4 px-6">Müşteri Adı</th>
                                         <th className="py-4 px-6">Ödeme Durumu</th>
+                                        <th className="py-4 px-6 text-center">Toplam Ziyaret</th>
                                         <th className="py-4 px-6 text-right">Aylık Ücret</th>
                                         <th className="py-4 px-6 text-right">Kalan Bakiye</th>
-                                        <th className="py-4 px-6 text-right">Ziyaret Saati</th>
+                                        <th className="py-4 px-6 text-right">Son Ziyaret Zamanı</th>
                                         <th className="py-4 px-6 text-center">Tahsilat İşlemleri</th>
                                     </tr>
                                 </thead>
@@ -165,6 +168,11 @@ export default function BugunGidilenlerPage() {
                                                         {client.durum}
                                                     </span>
                                                 </td>
+                                                <td className="py-4 px-6 text-center font-bold text-slate-600">
+                                                    <span className="bg-slate-50 border border-slate-200 text-slate-600 px-2 py-1 rounded-lg text-xs">
+                                                        📍 {client.ziyaret_sayisi} Kez
+                                                    </span>
+                                                </td>
                                                 <td className="py-4 px-6 text-right font-medium text-slate-500">
                                                     ₺{client.aylik_ucret}
                                                 </td>
@@ -174,7 +182,7 @@ export default function BugunGidilenlerPage() {
                                                     </span>
                                                 </td>
                                                 <td className="py-4 px-6 text-right text-emerald-700 font-extrabold text-xs">
-                                                    ⏱️ {formatTime(client.ziyaret_tarihi)}
+                                                    ⏱️ {formatDateTime(client.ziyaret_tarihi)}
                                                 </td>
                                                 <td className="py-4 px-6 text-center">
                                                     {isPaid ? (
@@ -276,6 +284,13 @@ export default function BugunGidilenlerPage() {
                             <button 
                                 onClick={() => {
                                     if(partialModal.amount && !isNaN(partialModal.amount)) {
+                                        // Girilen ödeme miktarının kalan bakiyeyi aşmadığını doğrula
+                                        const client = visitedList.find(c => c.id === partialModal.id);
+                                        const amountInput = Number(partialModal.amount);
+                                        if (client && amountInput > Number(client.kalan_bakiye)) {
+                                            alert(`Hata: Girilen tutar (₺${amountInput}) kalan bakiyeden (₺${client.kalan_bakiye}) fazla olamaz.`);
+                                            return;
+                                        }
                                         handleAction(partialModal.id, 'KISMI_ODEME', partialModal.amount);
                                         setPartialModal({ open: false, id: null, name: '', amount: '' });
                                     } else {

@@ -33,24 +33,38 @@ export async function GET(request) {
       console.warn("Sütun kontrolü başarısız oldu, varsayılan olarak 'tarih' kullanılıyor:", e.message);
     }
 
-    // Bugün gidilen müşterileri getir
+    // Ziyaret edilen tüm müşterileri gruplayarak getir (Günlük filtrelemeyi kaldırıp tüm geçmişi listeliyoruz)
     let rows;
     if (tarihColumn === 'islem_tarihi') {
       const res = await sql`
-        SELECT m.*, z.islem_tarihi as ziyaret_tarihi
+        SELECT 
+            m.id,
+            m.isim,
+            m.durum,
+            m.aylik_ucret,
+            m.kalan_bakiye,
+            COUNT(z.id) as ziyaret_sayisi,
+            MAX(z.islem_tarihi) as ziyaret_tarihi
         FROM ziyaretler z
         JOIN musteriler m ON z.musteri_id = m.id
-        WHERE z.gun = ${parseInt(gun)}
-        ORDER BY z.id DESC;
+        GROUP BY m.id, m.isim, m.durum, m.aylik_ucret, m.kalan_bakiye
+        ORDER BY ziyaret_tarihi DESC;
       `;
       rows = res.rows;
     } else {
       const res = await sql`
-        SELECT m.*, z.tarih as ziyaret_tarihi
+        SELECT 
+            m.id,
+            m.isim,
+            m.durum,
+            m.aylik_ucret,
+            m.kalan_bakiye,
+            COUNT(z.id) as ziyaret_sayisi,
+            MAX(z.tarih) as ziyaret_tarihi
         FROM ziyaretler z
         JOIN musteriler m ON z.musteri_id = m.id
-        WHERE z.gun = ${parseInt(gun)}
-        ORDER BY z.id DESC;
+        GROUP BY m.id, m.isim, m.durum, m.aylik_ucret, m.kalan_bakiye
+        ORDER BY ziyaret_tarihi DESC;
       `;
       rows = res.rows;
     }

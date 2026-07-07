@@ -63,6 +63,12 @@ export async function POST(request) {
             }
             const bekleyenBakiye = Number(musteriRes.rows[0].kalan_bakiye);
             const odenenMiktar = Number(value);
+            
+            // Girilen tutarın kalan bakiyeyi aşmadığını doğrula
+            if (odenenMiktar > bekleyenBakiye) {
+                return NextResponse.json({ success: false, error: `Girilen tutar (₺${odenenMiktar}) kalan bakiyeden (₺${bekleyenBakiye}) fazla olamaz.` }, { status: 400 });
+            }
+
             const kalanMiktar = Math.max(0, bekleyenBakiye - odenenMiktar);
             const yeniDurum = kalanMiktar <= 0 ? 'Ödendi' : 'Bekliyor';
 
@@ -84,6 +90,14 @@ export async function POST(request) {
             await sql`
                 INSERT INTO ziyaretler (musteri_id, gun) 
                 VALUES (${musteriId}, ${Number(currentDay)});
+            `;
+
+            // Müşterinin kalan bakiyesini hizmet ücreti (aylik_ucret) kadar artır ve durumunu 'Bekliyor' yap
+            await sql`
+                UPDATE musteriler 
+                SET kalan_bakiye = kalan_bakiye + aylik_ucret,
+                    durum = 'Bekliyor'
+                WHERE id = ${musteriId};
             `;
         } else {
             return NextResponse.json({ success: false, error: 'Geçersiz işlem tipi.' }, { status: 400 });
