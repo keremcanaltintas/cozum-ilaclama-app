@@ -1,18 +1,23 @@
 import { sql } from "@vercel/postgres";
 import { NextResponse } from "next/server";
-import { verifyPassword, signToken } from "../../lib/auth";
+import { hashPassword, verifyPassword, signToken } from "../../lib/auth";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
     try {
         const { email, password } = await request.json();
+        
+        console.log(`\n--- [GİRİŞ DENEMESİ BAŞLADI] ---`);
+        console.log(`[LOGIN] Gelen Kullanıcı Adı: "${email}"`);
 
         if (!email || !password) {
+            console.log(`[LOGIN HATA] Giriş başarısız: Kullanıcı adı veya şifre boş gönderildi.`);
             return NextResponse.json({ success: false, error: "Lütfen kullanıcı adınızı ve şifrenizi girin." }, { status: 400 });
         }
 
         const normalizedEmail = email.toLowerCase().trim();
+        console.log(`[LOGIN] Normalize Edilen Kullanıcı Adı: "${normalizedEmail}"`);
 
         // 1. Kullanıcılar tablosunu garantiye al
         await sql`
@@ -28,6 +33,7 @@ export async function POST(request) {
         // 1b. Tablo boşsa varsayılan kullanıcıları otomatik ekle (Self-Seeding)
         const countRes = await sql`SELECT COUNT(*)::int as count FROM kullanicilar;`;
         if (countRes.rows[0].count === 0) {
+            console.log(`[LOGIN SEED] 'kullanicilar' tablosu boş. Kadir ve Kerem hesapları oluşturuluyor...`);
             const hashKadir = await hashPassword("kadir12345.");
             const hashKerem = await hashPassword("kerem0205KA");
             
@@ -39,26 +45,35 @@ export async function POST(request) {
                 INSERT INTO kullanicilar (email, password_hash, isim, rol)
                 VALUES ('kerem0205', ${hashKerem}, 'Kerem', 'admin');
             `;
+            console.log(`[LOGIN SEED BAŞARILI] Kadir ve Kerem hesapları veritabanına kaydedildi.`);
         }
 
         // 2. Kullanıcıyı sorgula
+        console.log(`[LOGIN] Veritabanında "${normalizedEmail}" aranıyor...`);
         const userRes = await sql`
             SELECT * FROM kullanicilar WHERE email = ${normalizedEmail};
         `;
 
         if (userRes.rows.length === 0) {
-            return NextResponse.json({ success: false, error: "Hatalı e-posta veya şifre." }, { status: 401 });
+            console.log(`[LOGIN HATA] "${normalizedEmail}" kullanıcı adı veritabanında bulunamadı!`);
+            return NextResponse.json({ success: false, error: "Hatalı kullanıcı adı veya şifre." }, { status: 401 });
         }
 
         const user = userRes.rows[0];
+        console.log(`[LOGIN] Kullanıcı bulundu! İsim: "${user.isim}", Rol: "${user.rol}"`);
 
-        // 2. Şifre doğrula
+        // 3. Şifre doğrula
+        console.log(`[LOGIN] Şifre doğrulaması başlatılıyor...`);
         const isPasswordCorrect = await verifyPassword(password, user.password_hash);
+        
         if (!isPasswordCorrect) {
-            return NextResponse.json({ success: false, error: "Hatalı e-posta veya şifre." }, { status: 401 });
+            console.log(`[LOGIN HATA] Şifre uyuşmadı! Girilen şifre veritabanındaki hash ile eşleşmiyor.`);
+            return NextResponse.json({ success: false, error: "Hatalı kullanıcı adı veya şifre." }, { status: 401 });
         }
 
-        // 3. JWT imzala
+        console.log(`[LOGIN BAŞARILI] Şifre doğru. JWT token oluşturuluyor...`);
+
+        // 4. JWT imzala
         const token = await signToken({
             id: user.id,
             email: user.email,
@@ -66,7 +81,7 @@ export async function POST(request) {
             rol: user.rol
         });
 
-        // 4. HTTP-only Cookie olarak kaydet ve yanıtla
+        // 5. HTTP-only Cookie olarak kaydet ve yanıtla
         const response = NextResponse.json({ 
             success: true, 
             message: "Giriş işlemi başarıyla tamamlandı!" 
@@ -82,10 +97,11 @@ export async function POST(request) {
             path: '/'
         });
 
+        console.log(`[LOGIN TAMAMLANDI] Giriş başarılı. Çerez tarayıcıya set edildi.`);
         return response;
 
     } catch (error) {
-        console.error("Giriş API hatası:", error);
+        console.error(`[LOGIN KRİTİK HATA] Sunucu hatası oluştu:`, error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

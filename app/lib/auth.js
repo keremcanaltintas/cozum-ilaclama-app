@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 const SECRET_KEY = process.env.JWT_SECRET || "usak-cozum-ilaclama-secret-key-987654321-secure!";
 const encoder = new TextEncoder();
 
