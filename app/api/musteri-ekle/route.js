@@ -31,10 +31,11 @@ export async function POST(request) {
         // Veritabanına yeni müşteriyi ekleme sorgusu
         // kalan_bakiye başlangıçta aylık ücrete eşit ayarlanır
         try {
-            // Önce yeni ziyaret_gunleri dizisiyle kaydetmeyi deniyoruz
+            // @vercel/postgres array serileştirme hatasını önlemek için PG array literal formatı kullanıyoruz
+            const arrayLiteral = `{${parsedGunler.join(',')}}`;
             await sql`
                 INSERT INTO musteriler (isim, aylik_ucret, ziyaret_gunleri, durum, kalan_bakiye)
-                VALUES (${isim}, ${parseInt(aylik_ucret)}, ${parsedGunler}, 'Bekliyor', ${parseInt(aylik_ucret)})
+                VALUES (${isim}, ${parseInt(aylik_ucret)}, ${arrayLiteral}, 'Bekliyor', ${parseInt(aylik_ucret)})
             `;
         } catch (dbError) {
             console.warn("ziyaret_gunleri sütunu bulunamadı, planlanan_gun alanına geri dönülüyor:", dbError.message);
