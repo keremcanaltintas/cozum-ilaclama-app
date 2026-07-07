@@ -1,13 +1,11 @@
 "use client";
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const router = useRouter();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,8 +19,7 @@ export default function LoginPage() {
             });
             const data = await res.json();
             if (res.ok && data.success) {
-                router.push('/');
-                router.refresh();
+                window.location.href = '/';
             } else {
                 setError(data.error || 'Giriş yapılamadı.');
             }
