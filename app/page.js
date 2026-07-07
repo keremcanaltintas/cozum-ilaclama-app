@@ -11,6 +11,10 @@ export default function Home() {
     // Ziyaret durumunu yerel hafızada tutmak için state
     const [localVisits, setLocalVisits] = useState({});
 
+    // Ziyaret Geri Alma (Undo) State'leri
+    const [pendingVisits, setPendingVisits] = useState({});
+    const [undoToast, setUndoToast] = useState({ show: false, clientId: null, clientName: '' });
+
     // Modal Yönetimleri
     const [confirmModal, setConfirmModal] = useState({ open: false, id: null, name: '' });
     const [partialModal, setPartialModal] = useState({ open: false, id: null, name: '', amount: '' });
@@ -25,6 +29,62 @@ export default function Home() {
     const triggerToast = (message, type = 'success') => {
         setToast({ show: true, message, type });
         setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+    };
+
+    // Ziyaret geri alma (Undo) mekanizması fonksiyonları
+    const triggerPendingVisit = (clientId, clientName) => {
+        // Eğer bekleyen başka bir işlem varsa onu hemen tamamla
+        if (undoToast.show && undoToast.clientId) {
+            commitPendingVisit(undoToast.clientId);
+        }
+
+        // 2 saniye sonra işlemi kalıcı olarak uygula
+        const timerId = setTimeout(() => {
+            commitPendingVisit(clientId);
+        }, 2000);
+
+        // Bekleyen ziyaret durumuna ekle (böylece listeden kaybolacak)
+        setPendingVisits(prev => ({ ...prev, [clientId]: timerId }));
+
+        // Geri al barını göster
+        setUndoToast({
+            show: true,
+            clientId,
+            clientName
+        });
+    };
+
+    const commitPendingVisit = async (clientId) => {
+        setPendingVisits(prev => {
+            const updated = { ...prev };
+            delete updated[clientId];
+            return updated;
+        });
+
+        setUndoToast(prev => {
+            if (prev.clientId === clientId) {
+                return { show: false, clientId: null, clientName: '' };
+            }
+            return prev;
+        });
+
+        await handleAction(clientId, 'GIDILDI');
+    };
+
+    const undoPendingVisit = (clientId) => {
+        const timerId = pendingVisits[clientId];
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+
+        setPendingVisits(prev => {
+            const updated = { ...prev };
+            delete updated[clientId];
+            return updated;
+        });
+
+        setUndoToast({ show: false, clientId: null, clientName: '' });
+        triggerToast('İşaretleme iptal edildi (Geri alındı).');
     };
 
     // Sunucudan müşterileri çekme fonksiyonu
@@ -84,7 +144,9 @@ export default function Home() {
 
     // Filtreleme mantığı
     const filteredClients = clients.filter(c => 
-        c.isim.toLowerCase().includes(searchQuery.toLowerCase())
+        c.isim.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !localVisits[c.id] &&
+        !pendingVisits[c.id]
     );
 
     // Özet Dashboard Hesaplamaları
@@ -223,8 +285,8 @@ export default function Home() {
                                 <div className="mt-4 space-y-2">
                                     <button 
                                         disabled={isVisited}
-                                        onClick={() => handleAction(client.id, 'GIDILDI')}
-                                        className={`w-full font-bold text-sm py-3 rounded-xl transition flex justify-center items-center gap-2 ${isVisited ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 cursor-not-allowed' : 'bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100'}`}
+                                        onClick={() => triggerPendingVisit(client.id, client.isim)}
+                                        className={`w-full font-bold text-sm py-3 rounded-xl transition flex justify-center items-center gap-2 ${isVisited ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 cursor-not-allowed' : 'bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 cursor-pointer'}`}
                                     >
                                         {isVisited ? '✓ Gidildi Olarak İşaretlendi' : '📍 Gidildi Olarak İşaretle'}
                                     </button>
@@ -329,6 +391,23 @@ export default function Home() {
                                 Kaydet
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* --- GERİ AL (UNDO) TOAST BAR --- */}
+            {undoToast.show && (
+                <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-200 w-full max-w-md px-4">
+                    <div className="bg-slate-900 text-white px-5 py-4 rounded-2xl shadow-xl flex justify-between items-center border border-slate-800">
+                        <div className="text-xs">
+                            <span className="font-bold text-emerald-400">{undoToast.clientName}</span> gidildi olarak işaretleniyor...
+                        </div>
+                        <button 
+                            onClick={() => undoPendingVisit(undoToast.clientId)}
+                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition active:scale-95 cursor-pointer"
+                        >
+                            ↩️ Geri Al
+                        </button>
                     </div>
                 </div>
             )}

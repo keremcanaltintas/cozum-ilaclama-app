@@ -8,7 +8,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const gun = searchParams.get("gun") || new Date().getDate().toString();
 
-    // ziyaretler tablosunu garantiye al
+    // Ziyaretler tablosunu garantiye al
     await sql`
         CREATE TABLE IF NOT EXISTS ziyaretler (
             id SERIAL PRIMARY KEY,
@@ -18,14 +18,42 @@ export async function GET(request) {
         );
     `;
 
-    // Bugün gidilen müşterileri getir (Müşteri bilgileriyle birleştirerek)
-    const { rows } = await sql`
+    // Hangi tarih sütununun var olduğunu dinamik olarak kontrol et
+    let tarihColumn = 'tarih';
+    try {
+      const colCheck = await sql`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'ziyaretler' AND column_name = 'islem_tarihi';
+      `;
+      if (colCheck.rows.length > 0) {
+        tarihColumn = 'islem_tarihi';
+      }
+    } catch (e) {
+      console.warn("Sütun kontrolü başarısız oldu, varsayılan olarak 'tarih' kullanılıyor:", e.message);
+    }
+
+    // Bugün gidilen müşterileri getir
+    let rows;
+    if (tarihColumn === 'islem_tarihi') {
+      const res = await sql`
+        SELECT m.*, z.islem_tarihi as ziyaret_tarihi
+        FROM ziyaretler z
+        JOIN musteriler m ON z.musteri_id = m.id
+        WHERE z.gun = ${parseInt(gun)}
+        ORDER BY z.id DESC;
+      `;
+      rows = res.rows;
+    } else {
+      const res = await sql`
         SELECT m.*, z.tarih as ziyaret_tarihi
         FROM ziyaretler z
         JOIN musteriler m ON z.musteri_id = m.id
         WHERE z.gun = ${parseInt(gun)}
         ORDER BY z.id DESC;
-    `;
+      `;
+      rows = res.rows;
+    }
 
     return NextResponse.json(rows);
   } catch (error) {
