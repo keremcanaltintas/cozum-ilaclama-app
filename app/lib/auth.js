@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+// Using global crypto to ensure compatibility with Next.js Edge Runtime (middleware)
 
 const SECRET_KEY = process.env.JWT_SECRET || "usak-cozum-ilaclama-secret-key-987654321-secure!";
 const encoder = new TextEncoder();
