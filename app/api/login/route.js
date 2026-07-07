@@ -9,8 +9,10 @@ export async function POST(request) {
         const { email, password } = await request.json();
 
         if (!email || !password) {
-            return NextResponse.json({ success: false, error: "Lütfen e-posta ve şifrenizi girin." }, { status: 400 });
+            return NextResponse.json({ success: false, error: "Lütfen kullanıcı adınızı ve şifrenizi girin." }, { status: 400 });
         }
+
+        const normalizedEmail = email.toLowerCase().trim();
 
         // 1. Kullanıcılar tablosunu garantiye al
         await sql`
@@ -25,7 +27,7 @@ export async function POST(request) {
 
         // 2. Kullanıcıyı sorgula
         const userRes = await sql`
-            SELECT * FROM kullanicilar WHERE email = ${email};
+            SELECT * FROM kullanicilar WHERE email = ${normalizedEmail};
         `;
 
         if (userRes.rows.length === 0) {
