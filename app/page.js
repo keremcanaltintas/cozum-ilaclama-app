@@ -92,11 +92,27 @@ export default function Home() {
     const ziyaretEdilenler = filteredClients.filter(c => localVisits[c.id]).length;
     const toplamCari = filteredClients.reduce((acc, c) => acc + Number(c.kalan_bakiye), 0);
 
-    const resetVisits = () => {
+    const resetVisits = async () => {
         if(confirm("Bugünün yerel ziyaret geçmişini sıfırlamak istediğinize emin misiniz?")) {
-            setLocalVisits({});
-            localStorage.removeItem(`visits_day_${currentDay}`);
-            triggerToast('Ziyaret verileri sıfırlandı.');
+            try {
+                const res = await fetch('/api/islem-yap', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ actionType: 'SIFIRLA', currentDay })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    setLocalVisits({});
+                    localStorage.removeItem(`visits_day_${currentDay}`);
+                    triggerToast('Bugünün ziyaret geçmişi veritabanından ve yerel hafızadan sıfırlandı.');
+                    fetchClients();
+                } else {
+                    triggerToast('Sıfırlama hatası: ' + data.error, 'error');
+                }
+            } catch (error) {
+                triggerToast('Sunucuya bağlanılamadı!', 'error');
+            }
         }
     };
 
@@ -118,7 +134,7 @@ export default function Home() {
                                 placeholder="Müşteri adı arayın..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-emerald-500 transition"
+                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
                             />
                         </div>
                     </div>
@@ -289,7 +305,7 @@ export default function Home() {
                             placeholder="Alınan tutarı girin (₺)" 
                             value={partialModal.amount}
                             onChange={(e) => setPartialModal({ ...partialModal, amount: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-500 transition mb-6"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 transition mb-6"
                         />
 
                         <div className="flex gap-2">

@@ -10,6 +10,7 @@ export default function DashboardLayout({ children }) {
     const menuItems = [
         { name: 'Dashboard', path: '/', icon: '🏠', desc: 'Bugünkü İş Planı' },
         { name: 'Müşteriler', path: '/musteriler', icon: '👥', desc: 'Tüm Liste' },
+        { name: 'Ödemeler', path: '/odemeler', icon: '💳', desc: 'Tahsilat Geçmişi' },
         { name: 'Müşteri Ekle', path: '/musteri-ekle', icon: '➕', desc: 'Yeni Kayıt' },
         { name: 'Aylık Rapor', path: '/raporlar', icon: '📊', desc: 'Finansal Analiz' }
     ];

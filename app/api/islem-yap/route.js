@@ -6,24 +6,77 @@ export async function POST(request) {
         const body = await request.json();
         const { musteriId, actionType, value, currentDay } = body;
 
-        if (!musteriId || !actionType) {
+        if (!actionType || (actionType !== 'SIFIRLA' && !musteriId)) {
             return NextResponse.json({ success: false, error: 'Eksik parametre gönderildi.' }, { status: 400 });
         }
 
-        if (actionType === 'TAM_ODEME') {
+        // Ödemeler tablosunu otomatik oluştur
+        await sql`
+            CREATE TABLE IF NOT EXISTS odemeler (
+                id SERIAL PRIMARY KEY,
+                musteri_id INTEGER NOT NULL,
+                odenen_miktar INTEGER NOT NULL,
+                bekleyen_miktar INTEGER NOT NULL,
+                kalan_miktar INTEGER NOT NULL,
+                odeme_tipi VARCHAR(50) NOT NULL,
+                tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `;
+
+        if (actionType === 'SIFIRLA') {
+            // Bugünün tüm ziyaret loglarını veritabanından temizle
+            await sql`
+                DELETE FROM ziyaretler 
+                WHERE gun = ${Number(currentDay)};
+            `;
+        }
+        else if (actionType === 'TAM_ODEME') {
+            // Müşterinin şu anki bekleyen bakiyesini alalım
+            const musteriRes = await sql`
+                SELECT kalan_bakiye FROM musteriler WHERE id = ${musteriId};
+            `;
+            if (musteriRes.rows.length === 0) {
+                return NextResponse.json({ success: false, error: 'Müşteri bulunamadı.' }, { status: 404 });
+            }
+            const bekleyenBakiye = Number(musteriRes.rows[0].kalan_bakiye);
+
             // Bakiyeyi sıfırla ve durumu Ödendi yap
             await sql`
                 UPDATE musteriler 
                 SET durum = 'Ödendi', kalan_bakiye = 0 
                 WHERE id = ${musteriId};
             `;
+
+            // Ödemeler tablosuna tahsilat kaydı ekle
+            await sql`
+                INSERT INTO odemeler (musteri_id, odenen_miktar, bekleyen_miktar, kalan_miktar, odeme_tipi)
+                VALUES (${musteriId}, ${bekleyenBakiye}, ${bekleyenBakiye}, 0, 'TAM');
+            `;
         } 
         else if (actionType === 'KISMI_ODEME') {
+            // Müşterinin şu anki bekleyen bakiyesini alalım
+            const musteriRes = await sql`
+                SELECT kalan_bakiye FROM musteriler WHERE id = ${musteriId};
+            `;
+            if (musteriRes.rows.length === 0) {
+                return NextResponse.json({ success: false, error: 'Müşteri bulunamadı.' }, { status: 404 });
+            }
+            const bekleyenBakiye = Number(musteriRes.rows[0].kalan_bakiye);
+            const odenenMiktar = Number(value);
+            const kalanMiktar = Math.max(0, bekleyenBakiye - odenenMiktar);
+            const yeniDurum = kalanMiktar <= 0 ? 'Ödendi' : 'Bekliyor';
+
             // Gönderilen tutarı mevcut kalan_bakiye değerinden düş
             await sql`
                 UPDATE musteriler 
-                SET durum = 'Bekliyor', kalan_bakiye = kalan_bakiye - ${Number(value)} 
+                SET durum = ${yeniDurum}, kalan_bakiye = ${kalanMiktar} 
                 WHERE id = ${musteriId};
+            `;
+
+            // Ödemeler tablosuna tahsilat kaydı ekle
+            await sql`
+                INSERT INTO odemeler (musteri_id, odenen_miktar, bekleyen_miktar, kalan_miktar, odeme_tipi)
+                VALUES (${musteriId}, ${odenenMiktar}, ${bekleyenBakiye}, ${kalanMiktar}, 'KISMI');
             `;
         } 
         else if (actionType === 'GIDILDI') {

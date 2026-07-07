@@ -90,7 +90,7 @@ export default function MusteriEklePage() {
                             value={isim}
                             onChange={(e) => setIsim(e.target.value)}
                             placeholder="Örn: Kebapçı Selami" 
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-emerald-500 transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
                             required
                         />
                     </div>
@@ -103,7 +103,7 @@ export default function MusteriEklePage() {
                             value={ucret}
                             onChange={(e) => setUcret(e.target.value)}
                             placeholder="Örn: 1500" 
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-emerald-500 transition"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
                             required
                         />
                     </div>
