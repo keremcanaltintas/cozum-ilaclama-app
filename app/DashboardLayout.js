@@ -7,6 +7,11 @@ export default function DashboardLayout({ children }) {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
 
+    // Giriş sayfasında sidebar düzenini gösterme
+    if (pathname === '/login') {
+        return <>{children}</>;
+    }
+
     const menuItems = [
         { name: 'Dashboard', path: '/', icon: '🏠', desc: 'Bugünkü İş Planı' },
         { name: 'Müşteriler', path: '/musteriler', icon: '👥', desc: 'Tüm Liste' },
@@ -77,6 +82,28 @@ export default function DashboardLayout({ children }) {
                         );
                     })}
                 </nav>
+
+                {/* Çıkış Yap Butonu */}
+                <div className="p-4 border-t border-slate-100">
+                    <button 
+                        onClick={async () => {
+                            if(confirm("Sistemden çıkış yapmak istediğinize emin misiniz?")) {
+                                try {
+                                    const res = await fetch('/api/logout', { method: 'POST' });
+                                    if (res.ok) {
+                                        window.location.href = '/login';
+                                    }
+                                } catch (err) {
+                                    console.error(err);
+                                }
+                            }
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-rose-600 hover:bg-rose-50 font-bold transition duration-200 cursor-pointer"
+                    >
+                        <span className="text-xl">🚪</span>
+                        <div className="text-sm">Çıkış Yap</div>
+                    </button>
+                </div>
 
                 {/* Footer Bölümü */}
                 <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center gap-3">
