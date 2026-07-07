@@ -4,22 +4,9 @@ import { hashPassword } from "../../lib/auth";
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request) {
+export async function GET(request) {
     try {
-        const body = await request.json();
-        const { email, password, isim, secretKey } = body;
-
-        // Basit bir güvenlik kontrolü (İnternetteki herkes admin oluşturamasın)
-        const ADMIN_SETUP_SECRET = process.env.ADMIN_SETUP_SECRET || "cozum-admin-setup-secret-key-13579";
-        if (secretKey !== ADMIN_SETUP_SECRET) {
-            return NextResponse.json({ success: false, error: "Yetkisiz kurulum isteği. Geçersiz kurulum anahtarı." }, { status: 403 });
-        }
-
-        if (!email || !password || !isim) {
-            return NextResponse.json({ success: false, error: "Lütfen email, password ve isim alanlarını doldurun." }, { status: 400 });
-        }
-
-        // 1. Kullanıcılar tablosunu garantiye al
+        // 1. Kullanıcılar tablosunu oluştur
         await sql`
             CREATE TABLE IF NOT EXISTS kullanicilar (
                 id SERIAL PRIMARY KEY,
@@ -30,23 +17,35 @@ export async function POST(request) {
             );
         `;
 
-        // 2. Parolayı hash'le
-        const passwordHash = await hashPassword(password);
+        // 2. Parolaları hash'le (Web Crypto PBKDF2)
+        const hashKadir = await hashPassword("kadir12345.");
+        const hashKerem = await hashPassword("kerem0205KA");
 
-        // 3. Admin kullanıcısını veritabanına ekle
+        // 3. Kadir kullanıcısını ekle/güncelle (usakcozumilaclama)
         await sql`
             INSERT INTO kullanicilar (email, password_hash, isim, rol)
-            VALUES (${email}, ${passwordHash}, ${isim}, 'admin')
+            VALUES ('usakcozumilaclama', ${hashKadir}, 'Böcek Kadir', 'admin')
             ON CONFLICT (email) 
             DO UPDATE SET 
-                password_hash = ${passwordHash},
-                isim = ${isim},
+                password_hash = ${hashKadir}, 
+                isim = 'Böcek Kadir',
+                rol = 'admin';
+        `;
+
+        // 4. Kerem kullanıcısını ekle/güncelle (kerem0205)
+        await sql`
+            INSERT INTO kullanicilar (email, password_hash, isim, rol)
+            VALUES ('kerem0205', ${hashKerem}, 'Kerem', 'admin')
+            ON CONFLICT (email) 
+            DO UPDATE SET 
+                password_hash = ${hashKerem}, 
+                isim = 'Kerem',
                 rol = 'admin';
         `;
 
         return NextResponse.json({ 
             success: true, 
-            message: `Admin kullanıcısı (${email}) başarıyla oluşturuldu/güncellendi!` 
+            message: "Kullanıcılar tablosu oluşturuldu. 'usakcozumilaclama' (şifre: kadir12345.) ve 'kerem0205' (şifre: kerem0205KA) hesapları başarıyla oluşturuldu!" 
         });
 
     } catch (error) {

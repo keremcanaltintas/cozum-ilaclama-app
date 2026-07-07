@@ -1,11 +1,25 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({ children }) {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        if (pathname !== '/login') {
+            fetch('/api/current-user')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        setUser(data.user);
+                    }
+                })
+                .catch(err => console.error("Kullanıcı yükleme hatası:", err));
+        }
+    }, [pathname]);
 
     // Giriş sayfasında sidebar düzenini gösterme
     if (pathname === '/login') {
@@ -34,7 +48,11 @@ export default function DashboardLayout({ children }) {
                     </button>
                     <img src="/logo.png" alt="Uşak Çözüm" className="h-8 w-auto object-contain brightness-0 invert" />
                 </div>
-                <img src="/seal.jpg" alt="Mühür" className="h-8 w-8 rounded-full object-cover border border-emerald-500 shadow-sm" />
+                {user && (
+                    <div className="text-xs font-bold text-emerald-100 bg-emerald-700/50 px-3 py-1 rounded-full border border-emerald-600">
+                        👤 {user.isim}
+                    </div>
+                )}
             </header>
 
             {/* SİDEBAR (MASAÜSTÜ & MOBİL DRAWER) */}
@@ -52,6 +70,16 @@ export default function DashboardLayout({ children }) {
                         ✕
                     </button>
                 </div>
+
+                {/* Hoş Geldin Mesajı */}
+                {user && (
+                    <div className="px-6 py-3 bg-emerald-50/50 border-b border-slate-100">
+                        <div className="text-[9px] uppercase font-extrabold text-emerald-800 tracking-wider">Aktif Oturum</div>
+                        <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5 mt-0.5">
+                            🟢 Hoş Geldin {user.isim}
+                        </div>
+                    </div>
+                )}
 
                 {/* Menü Linkleri */}
                 <nav className="flex-1 p-4 space-y-2 overflow-y-auto">

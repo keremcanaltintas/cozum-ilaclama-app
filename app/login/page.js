@@ -60,10 +60,10 @@ export default function LoginPage() {
                     
                     {/* E-posta */}
                     <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 pl-1">E-Posta Adresi</label>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-300 mb-1.5 pl-1">Kullanıcı Adı</label>
                         <input 
-                            type="email" 
-                            placeholder="ornek@cozum.com" 
+                            type="text" 
+                            placeholder="Kullanıcı adınızı girin..." 
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required

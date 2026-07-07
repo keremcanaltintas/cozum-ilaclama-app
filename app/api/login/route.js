@@ -12,7 +12,18 @@ export async function POST(request) {
             return NextResponse.json({ success: false, error: "Lütfen e-posta ve şifrenizi girin." }, { status: 400 });
         }
 
-        // 1. Kullanıcıyı sorgula
+        // 1. Kullanıcılar tablosunu garantiye al
+        await sql`
+            CREATE TABLE IF NOT EXISTS kullanicilar (
+                id SERIAL PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                isim VARCHAR(255) NOT NULL,
+                rol VARCHAR(50) DEFAULT 'admin'
+            );
+        `;
+
+        // 2. Kullanıcıyı sorgula
         const userRes = await sql`
             SELECT * FROM kullanicilar WHERE email = ${email};
         `;
