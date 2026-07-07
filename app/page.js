@@ -282,7 +282,7 @@ export default function Home() {
                                 </div>
 
                                 {/* İşlem Butonları */}
-                                <div className="mt-4 space-y-2">
+                                <div className="mt-4">
                                     <button 
                                         disabled={isVisited}
                                         onClick={() => triggerPendingVisit(client.id, client.isim)}
@@ -290,21 +290,6 @@ export default function Home() {
                                     >
                                         {isVisited ? '✓ Gidildi Olarak İşaretlendi' : '📍 Gidildi Olarak İşaretle'}
                                     </button>
-                                    
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <button 
-                                            onClick={() => setConfirmModal({ open: true, id: client.id, name: client.isim })}
-                                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3 rounded-xl transition active:scale-[0.98]"
-                                        >
-                                            💵 Tamamını Aldım
-                                        </button>
-                                        <button 
-                                            onClick={() => setPartialModal({ open: true, id: client.id, name: client.isim, amount: '' })}
-                                            className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm py-3 rounded-xl transition active:scale-[0.98]"
-                                        >
-                                            🪙 Kısmi Ödeme
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
                         );
@@ -312,88 +297,7 @@ export default function Home() {
                 </div>
             </main>
 
-            {/* --- MODAL 1: TAM ÖDEME ONAYI --- */}
-            {confirmModal.open && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-                    <div className="bg-white w-full max-w-sm rounded-2xl p-6 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-                        <h3 className="text-lg font-bold text-slate-800 mb-2">Tam Tahsilat Teyidi</h3>
-                        <p className="text-sm text-slate-500 mb-6">
-                            <strong className="text-slate-700">{confirmModal.name}</strong> isimli müşterinin tüm bakiyesi ödendi olarak işaretlenecektir. Onaylıyor musunuz?
-                        </p>
-                        <div className="flex gap-2">
-                            <button 
-                                onClick={() => setConfirmModal({ open: false, id: null, name: '' })}
-                                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition"
-                            >
-                                İptal
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    handleAction(confirmModal.id, 'TAM_ODEME');
-                                    setConfirmModal({ open: false, id: null, name: '' });
-                                }}
-                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm transition"
-                            >
-                                Evet, Aldım
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
-            {/* --- MODAL 2: KISMİ ÖDEME PANELİ --- */}
-            {partialModal.open && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-                    <div className="bg-white w-full max-w-sm rounded-2xl p-6 shadow-xl animate-in fade-in zoom-in-95 duration-150">
-                        <h3 className="text-lg font-bold text-slate-800 mb-1">Kısmi Tahsilat Girişi</h3>
-                        <p className="text-xs text-slate-400 mb-4">{partialModal.name}</p>
-                        
-                        {/* Hızlı Tutar Butonları */}
-                        <div className="grid grid-cols-3 gap-2 mb-4">
-                            {[100, 250, 500].map(val => (
-                                <button 
-                                    key={val}
-                                    type="button"
-                                    onClick={() => setPartialModal({ ...partialModal, amount: val.toString() })}
-                                    className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg py-2 text-xs font-bold text-slate-600 transition"
-                                >
-                                    ₺{val}
-                                </button>
-                            ))}
-                        </div>
-
-                        <input 
-                            type="number" 
-                            placeholder="Alınan tutarı girin (₺)" 
-                            value={partialModal.amount}
-                            onChange={(e) => setPartialModal({ ...partialModal, amount: e.target.value })}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-amber-500 transition mb-6"
-                        />
-
-                        <div className="flex gap-2">
-                            <button 
-                                onClick={() => setPartialModal({ open: false, id: null, name: '', amount: '' })}
-                                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition"
-                            >
-                                Vazgeç
-                            </button>
-                            <button 
-                                onClick={() => {
-                                    if(partialModal.amount && !isNaN(partialModal.amount)) {
-                                        handleAction(partialModal.id, 'KISMI_ODEME', partialModal.amount);
-                                        setPartialModal({ open: false, id: null, name: '', amount: '' });
-                                    } else {
-                                        alert("Lütfen geçerli bir tutar girin.");
-                                    }
-                                }}
-                                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-sm transition"
-                            >
-                                Kaydet
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* --- GERİ AL (UNDO) TOAST BAR --- */}
             {undoToast.show && (
