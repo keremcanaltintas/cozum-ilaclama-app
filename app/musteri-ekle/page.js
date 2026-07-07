@@ -349,10 +349,10 @@ export default function MusteriEklePage() {
                     {/* Submit Butonu */}
                     <button 
                         type="submit" 
-                        disabled={yukleniyor}
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3.5 rounded-xl transition active:scale-[0.98] disabled:bg-slate-300 disabled:cursor-not-allowed shadow-xs cursor-pointer"
+                        disabled={yukleniyor || !isim.trim() || !ucret}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3.5 rounded-xl transition active:scale-[0.98] disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed disabled:text-slate-500 dark:disabled:text-slate-500 shadow-xs cursor-pointer"
                     >
-                        {yukleniyor ? "Kaydediliyor..." : "Müşteriyi Kaydet ve Günleri Planla"}
+                        {yukleniyor ? "Kaydediliyor..." : "Müşteriyi Kaydet"}
                     </button>
                 </form>
             </div>
