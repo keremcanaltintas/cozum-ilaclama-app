@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import MusteriEkleFormu from './MusteriEkleFormu';
 
 export default function Home() {
     const [clients, setClients] = useState([]);
@@ -145,6 +146,17 @@ export default function Home() {
                             />
                         </div>
                     </div>
+
+                    {/* Yeni Müşteri Kayıt Formu */}
+                    <MusteriEkleFormu 
+                        onSuccess={() => {
+                            fetchClients();
+                            triggerToast('Müşteri başarıyla eklendi!');
+                        }}
+                        onError={(err) => {
+                            triggerToast(err, 'error');
+                        }}
+                    />
 
                     {/* Günlük Özet Dashboard */}
                     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
