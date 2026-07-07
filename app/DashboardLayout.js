@@ -8,85 +8,15 @@ export default function DashboardLayout({ children }) {
     const [isOpen, setIsOpen] = useState(false);
     const [user, setUser] = useState(null);
 
-    // Koyu/Açık Mod State
-    const [theme, setTheme] = useState('light');
-    const [mounted, setMounted] = useState(false);
-
-    // Şifre Değiştirme Modal State
-    const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordError, setPasswordError] = useState('');
-    const [passwordSuccess, setPasswordSuccess] = useState('');
-    const [passwordLoading, setPasswordLoading] = useState(false);
-
     // Tema İlk Yükleme
     useEffect(() => {
-        setMounted(true);
         const savedTheme = localStorage.getItem('theme') || 'light';
-        setTheme(savedTheme);
         if (savedTheme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
     }, []);
-
-    // Tema Değiştirme Fonksiyonu
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        if (newTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    };
-
-    // Şifre Değiştirme Post Handler
-    const handleChangePasswordSubmit = async (e) => {
-        e.preventDefault();
-        setPasswordError('');
-        setPasswordSuccess('');
-        
-        if (newPassword !== confirmPassword) {
-            setPasswordError('Yeni şifreler uyuşmuyor.');
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            setPasswordError('Yeni şifre en az 6 karakter olmalıdır.');
-            return;
-        }
-
-        setPasswordLoading(true);
-        try {
-            const res = await fetch('/api/change-password', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ currentPassword, newPassword })
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                setPasswordSuccess('Şifreniz başarıyla değiştirildi!');
-                setCurrentPassword('');
-                setNewPassword('');
-                setConfirmPassword('');
-                setTimeout(() => {
-                    setIsPasswordModalOpen(false);
-                    setPasswordSuccess('');
-                }, 1500);
-            } else {
-                setPasswordError(data.error || 'Şifre değiştirilemedi.');
-            }
-        } catch (err) {
-            setPasswordError('Sunucu hatası oluştu.');
-        } finally {
-            setPasswordLoading(false);
-        }
-    };
 
     useEffect(() => {
         if (pathname !== '/login') {
@@ -112,7 +42,8 @@ export default function DashboardLayout({ children }) {
         { name: 'Gidilenler', path: '/bugun-gidilenler', icon: '📍', desc: 'Bugün Gidilenler' },
         { name: 'Ödemeler', path: '/odemeler', icon: '💳', desc: 'Tahsilat Geçmişi' },
         { name: 'Müşteri Ekle', path: '/musteri-ekle', icon: '➕', desc: 'Yeni Kayıt' },
-        { name: 'Aylık Rapor', path: '/raporlar', icon: '📊', desc: 'Finansal Analiz' }
+        { name: 'Aylık Rapor', path: '/raporlar', icon: '📊', desc: 'Finansal Analiz' },
+        { name: 'Ayarlar', path: '/ayarlar', icon: '⚙️', desc: 'Sistem & Profil' }
     ];
 
     return (
@@ -190,37 +121,6 @@ export default function DashboardLayout({ children }) {
                         );
                     })}
                 </nav>
-
-                {/* Sistem Ayarları Bölümü */}
-                <div className="p-4 border-t border-slate-100 bg-slate-50/30">
-                    <div className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider mb-3">Sistem Ayarları</div>
-                    
-                    {/* Görünüm Ayarları */}
-                    <div className="flex items-center justify-between mb-3 bg-white dark:bg-slate-800 p-2 rounded-xl border border-slate-100 dark:border-slate-700 shadow-3xs">
-                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                            {!mounted ? '☀️ Açık Mod' : (theme === 'light' ? '☀️ Açık Mod' : '🌙 Koyu Mod')}
-                        </span>
-                        <button 
-                            onClick={toggleTheme}
-                            className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-[10px] font-bold px-2.5 py-1.5 rounded-lg transition active:scale-95 cursor-pointer"
-                        >
-                            Değiştir
-                        </button>
-                    </div>
-
-                    {/* Şifre Değiştir */}
-                    <button 
-                        onClick={() => {
-                            setPasswordError('');
-                            setPasswordSuccess('');
-                            setIsPasswordModalOpen(true);
-                        }}
-                        className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold transition active:scale-95 cursor-pointer"
-                    >
-                        🔑 Şifre Değiştir
-                    </button>
-                </div>
-
                 {/* Çıkış Yap Butonu */}
                 <div className="p-4 border-t border-slate-100">
                     <button 
@@ -286,94 +186,6 @@ export default function DashboardLayout({ children }) {
                     {children}
                 </main>
             </div>
-
-            {/* ŞİFRE DEĞİŞTİRME MODAL */}
-            {isPasswordModalOpen && (
-                <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
-                        {/* Kapat Butonu */}
-                        <button 
-                            onClick={() => setIsPasswordModalOpen(false)}
-                            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg p-2 rounded-lg cursor-pointer"
-                        >
-                            ✕
-                        </button>
-
-                        <h3 className="text-base font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-2">
-                            🔑 Şifre Değiştirme
-                        </h3>
-                        <p className="text-xs text-slate-400 mb-6">Hesap güvenliğiniz için güçlü bir şifre belirleyin.</p>
-
-                        <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 pl-1">Mevcut Şifre</label>
-                                <input 
-                                    type="password" 
-                                    placeholder="Mevcut şifrenizi girin" 
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                    required
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 pl-1">Yeni Şifre</label>
-                                <input 
-                                    type="password" 
-                                    placeholder="En az 6 karakter" 
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    required
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 pl-1">Yeni Şifre Tekrar</label>
-                                <input 
-                                    type="password" 
-                                    placeholder="Yeni şifrenizi doğrulayın" 
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-emerald-500 transition"
-                                />
-                            </div>
-
-                            {/* Hata ve Başarı Bildirimleri */}
-                            {passwordError && (
-                                <div className="bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400 text-xs font-semibold py-2.5 px-4 rounded-xl text-center">
-                                    ⚠️ {passwordError}
-                                </div>
-                            )}
-
-                            {passwordSuccess && (
-                                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-semibold py-2.5 px-4 rounded-xl text-center">
-                                    ✓ {passwordSuccess}
-                                </div>
-                            )}
-
-                            <div className="flex gap-2 pt-2">
-                                <button 
-                                    type="button" 
-                                    onClick={() => setIsPasswordModalOpen(false)}
-                                    className="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-xs py-2.5 rounded-xl transition cursor-pointer"
-                                >
-                                    İptal
-                                </button>
-                                <button 
-                                    type="submit" 
-                                    disabled={passwordLoading}
-                                    className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 rounded-xl transition active:scale-95 cursor-pointer flex justify-center items-center"
-                                >
-                                    {passwordLoading ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

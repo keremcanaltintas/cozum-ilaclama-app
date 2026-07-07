@@ -208,48 +208,6 @@ export default function Home() {
     const toplamCari = filteredClients.reduce((acc, c) => acc + Number(c.kalan_bakiye), 0) + 
                        filteredDailyClients.reduce((acc, c) => acc + Number(c.kalan_bakiye), 0);
 
-    const resetVisits = async () => {
-        if(confirm("Bugünün yerel ziyaret geçmişini sıfırlamak istediğinize emin misiniz?")) {
-            try {
-                const res = await fetch('/api/islem-yap', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ actionType: 'SIFIRLA', currentDay })
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    setLocalVisits({});
-                    localStorage.removeItem(`visits_day_${currentDay}`);
-                    triggerToast('Bugünün ziyaret geçmişi veritabanından ve yerel hafızadan sıfırlandı.');
-                    fetchClients();
-                } else {
-                    triggerToast('Sıfırlama hatası: ' + data.error, 'error');
-                }
-            } catch (error) {
-                triggerToast('Sunucuya bağlanılamadı!', 'error');
-            }
-        }
-    };
-
-    const resetDatabase = async () => {
-        if(confirm("DİKKAT! Tüm müşteriler, ziyaretler ve ödemeler kalıcı olarak silinecektir. Bu işlem geri alınamaz! Sıfırlamak istediğinize emin misiniz?")) {
-            if(confirm("Son kez soruyoruz: Tüm verileri temizleyip fabrika ayarlarına dönmek istediğinize emin misiniz?")) {
-                try {
-                    const res = await fetch('/api/reset-database');
-                    const data = await res.json();
-                    if (data.success) {
-                        triggerToast('Veritabanı başarıyla sıfırlandı! Tüm kayıtlar silindi.');
-                        fetchClients();
-                    } else {
-                        triggerToast('Sıfırlama hatası: ' + data.error, 'error');
-                    }
-                } catch (error) {
-                    triggerToast('Sunucuya bağlanılamadı!', 'error');
-                }
-            }
-        }
-    };
 
     return (
         <div className="font-sans antialiased text-slate-800">
@@ -336,23 +294,7 @@ export default function Home() {
                         </form>
                     </div>
 
-                    {/* Sistem Ayarları */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-2">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Sistem Ayarları</h3>
-                        <button 
-                            onClick={resetVisits}
-                            className="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs py-3 rounded-xl transition flex justify-center items-center gap-2 cursor-pointer"
-                        >
-                            🔄 Ziyaretleri Sıfırla
-                        </button>
-                        <button 
-                            type="button"
-                            onClick={resetDatabase}
-                            className="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 font-bold text-xs py-3 rounded-xl transition flex justify-center items-center gap-2 cursor-pointer"
-                        >
-                            ⚠️ Tüm Verileri Sıfırla
-                        </button>
-                    </div>
+
                 </div>
 
                 {/* Sağ Taraf: İş Planı ve Müşteri Kartları */}
