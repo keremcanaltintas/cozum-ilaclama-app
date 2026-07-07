@@ -8,13 +8,18 @@ export default function DashboardLayout({ children }) {
     const [isOpen, setIsOpen] = useState(false);
     const [user, setUser] = useState(null);
 
-    // Tema İlk Yükleme
+    // Tema İlk Yükleme — varsayılan: açık mod
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             document.documentElement.classList.add('dark');
         } else {
+            // Varsayılan olarak açık mod: dark sınıfını temizle
             document.documentElement.classList.remove('dark');
+            // localStorage'da kayıt yoksa açık modu kaydet
+            if (!savedTheme) {
+                localStorage.setItem('theme', 'light');
+            }
         }
     }, []);
 
