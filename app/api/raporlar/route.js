@@ -18,6 +18,21 @@ export async function GET(request) {
         );
     `;
 
+    // Günlük ziyaretler tablosunu garantiye al (Join sorgusunun patlamaması için)
+    await sql`
+        CREATE TABLE IF NOT EXISTS gunluk_ziyaretler (
+            id SERIAL PRIMARY KEY,
+            isim VARCHAR(255) NOT NULL,
+            telefon VARCHAR(50),
+            ucret INTEGER NOT NULL,
+            durum VARCHAR(50) DEFAULT 'Bekliyor',
+            kalan_bakiye INTEGER NOT NULL,
+            gidildi BOOLEAN DEFAULT FALSE,
+            tarih DATE DEFAULT CURRENT_DATE,
+            ziyaret_tarihi TIMESTAMP
+        );
+    `;
+
     // 1. Toplam Tahsil Edilen Miktar
     const totalPaidRes = await sql`SELECT SUM(odenen_miktar) as total FROM odemeler;`;
     const toplamTahsilat = Number(totalPaidRes.rows[0].total || 0);
