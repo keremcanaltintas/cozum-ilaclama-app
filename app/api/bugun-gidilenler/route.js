@@ -33,7 +33,7 @@ export async function GET(request) {
       console.warn("Sütun kontrolü başarısız oldu, varsayılan olarak 'tarih' kullanılıyor:", e.message);
     }
 
-    // Ziyaret edilen tüm müşterileri gruplayarak getir (Günlük filtrelemeyi kaldırıp tüm geçmişi listeliyoruz)
+    // Bugün gidilen müşterileri getir
     let rows;
     if (tarihColumn === 'islem_tarihi') {
       const res = await sql`
@@ -69,7 +69,37 @@ export async function GET(request) {
       rows = res.rows;
     }
 
-    return NextResponse.json(rows);
+    const regularVisits = rows.map(r => ({ ...r, is_gunluk: false, telefon: '' }));
+
+    // 2. Günlük Ziyaretlerden gidilenleri çek
+    let dailyVisits = [];
+    try {
+        const dailyRes = await sql`
+            SELECT 
+                id, 
+                isim, 
+                durum, 
+                ucret as aylik_ucret, 
+                kalan_bakiye, 
+                1 as ziyaret_sayisi, 
+                ziyaret_tarihi,
+                TRUE as is_gunluk,
+                telefon
+            FROM gunluk_ziyaretler
+            WHERE gidildi = TRUE
+            ORDER BY ziyaret_tarihi DESC;
+        `;
+        dailyVisits = dailyRes.rows;
+    } catch (e) {
+        console.warn("gunluk_ziyaretler tablosu henüz oluşturulmamış:", e.message);
+    }
+
+    // İki listeyi birleştir ve en son ziyaret tarihine göre sırala
+    const combined = [...regularVisits, ...dailyVisits].sort((a, b) => {
+        return new Date(b.ziyaret_tarihi) - new Date(a.ziyaret_tarihi);
+    });
+
+    return NextResponse.json(combined);
   } catch (error) {
     console.error("Bugün gidilenler API hatası:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });

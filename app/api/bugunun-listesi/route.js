@@ -40,8 +40,24 @@ export async function GET(request) {
       rows = result.rows;
     }
 
+    // 2. Bugünkü ekstra günlük ziyaretleri çek (Gidilmemiş olanlar)
+    let dailyRows = [];
+    try {
+      const dailyResult = await sql`
+        SELECT * FROM gunluk_ziyaretler 
+        WHERE gidildi = FALSE AND (tarih = CURRENT_DATE OR durum = 'Bekliyor')
+        ORDER BY id ASC;
+      `;
+      dailyRows = dailyResult.rows;
+    } catch (e) {
+      console.warn("gunluk_ziyaretler tablosu henüz hazır değil:", e.message);
+    }
+
     // Verileri ön yüze sapasağlam paketleyip gönderiyoruz
-    return NextResponse.json(rows);
+    return NextResponse.json({
+      regular: rows,
+      daily: dailyRows
+    });
   } catch (error) {
     // Eğer veritabanı bağlantısında bir sorun olursa terminale kabak gibi yazdıracak
     console.error("=== VERİTABANI BAĞLANTI HATASI ===");

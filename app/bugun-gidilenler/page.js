@@ -7,8 +7,8 @@ export default function BugunGidilenlerPage() {
     const [error, setError] = useState(false);
 
     // Modal Yönetimleri
-    const [confirmModal, setConfirmModal] = useState({ open: false, id: null, name: '' });
-    const [partialModal, setPartialModal] = useState({ open: false, id: null, name: '', amount: '' });
+    const [confirmModal, setConfirmModal] = useState({ open: false, id: null, name: '', isGunluk: false });
+    const [partialModal, setPartialModal] = useState({ open: false, id: null, name: '', amount: '', isGunluk: false });
 
     // Toast Bildirimleri
     const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
@@ -41,12 +41,12 @@ export default function BugunGidilenlerPage() {
         fetchVisited();
     }, [currentDay]);
 
-    const handleAction = async (musteriId, actionType, value = null) => {
+    const handleAction = async (musteriId, actionType, value = null, isGunluk = false) => {
         try {
             const res = await fetch('/api/islem-yap', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ musteriId, actionType, value, currentDay })
+                body: JSON.stringify({ musteriId, actionType, value, currentDay, is_gunluk: isGunluk })
             });
             const data = await res.json();
 
@@ -107,7 +107,7 @@ export default function BugunGidilenlerPage() {
             {/* Durum Kontrolleri */}
             {loading && (
                 <div className="bg-white border border-slate-100 p-12 rounded-2xl text-center text-slate-400 text-sm font-medium">
-                    Bugünün ziyaret kayıtları veritabanından sorgulanıyor...
+                    Ziyaret kayıtları veritabanından sorgulanıyor...
                 </div>
             )}
 
@@ -144,7 +144,7 @@ export default function BugunGidilenlerPage() {
                                         <th className="py-4 px-6">Müşteri Adı</th>
                                         <th className="py-4 px-6">Ödeme Durumu</th>
                                         <th className="py-4 px-6 text-center">Toplam Ziyaret</th>
-                                        <th className="py-4 px-6 text-right">Aylık Ücret</th>
+                                        <th className="py-4 px-6 text-right">Aylık Ücret / Fiyat</th>
                                         <th className="py-4 px-6 text-right">Kalan Bakiye</th>
                                         <th className="py-4 px-6 text-right">Son Ziyaret Zamanı</th>
                                         <th className="py-4 px-6 text-center">Tahsilat İşlemleri</th>
@@ -154,9 +154,15 @@ export default function BugunGidilenlerPage() {
                                     {visitedList.map((client) => {
                                         const isPaid = client.durum === 'Ödendi' || Number(client.kalan_bakiye) <= 0;
                                         return (
-                                            <tr key={client.id} className="hover:bg-slate-50/50 text-slate-700 transition text-sm">
+                                            <tr key={`${client.is_gunluk ? 'g' : 'r'}-${client.id}`} className="hover:bg-slate-50/50 text-slate-700 transition text-sm">
                                                 <td className="py-4 px-6 font-bold text-slate-800">
-                                                    {client.isim}
+                                                    <div>{client.isim}</div>
+                                                    {client.is_gunluk && (
+                                                        <div className="flex items-center gap-1.5 mt-1 font-normal text-xs text-slate-400">
+                                                            <span className="text-[9px] bg-blue-50 text-blue-600 font-bold border border-blue-100 px-1.5 py-0.2 rounded uppercase">Günlük Ziyaret</span>
+                                                            {client.telefon && <a href={`tel:${client.telefon}`} className="text-blue-500 hover:underline">📞 {client.telefon}</a>}
+                                                        </div>
+                                                    )}
                                                 </td>
                                                 <td className="py-4 px-6">
                                                     <span className={`
@@ -192,13 +198,13 @@ export default function BugunGidilenlerPage() {
                                                     ) : (
                                                         <div className="flex gap-2 justify-center">
                                                             <button 
-                                                                onClick={() => setConfirmModal({ open: true, id: client.id, name: client.isim })}
+                                                                onClick={() => setConfirmModal({ open: true, id: client.id, name: client.isim, isGunluk: client.is_gunluk })}
                                                                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition active:scale-95 cursor-pointer"
                                                             >
                                                                 💵 Tam Al
                                                             </button>
                                                             <button 
-                                                                onClick={() => setPartialModal({ open: true, id: client.id, name: client.isim, amount: '' })}
+                                                                onClick={() => setPartialModal({ open: true, id: client.id, name: client.isim, amount: '', isGunluk: client.is_gunluk })}
                                                                 className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-3 py-1.5 rounded-lg transition active:scale-95 cursor-pointer"
                                                             >
                                                                 🪙 Kısmi
@@ -226,15 +232,15 @@ export default function BugunGidilenlerPage() {
                         </p>
                         <div className="flex gap-2">
                             <button 
-                                onClick={() => setConfirmModal({ open: false, id: null, name: '' })}
+                                onClick={() => setConfirmModal({ open: false, id: null, name: '', isGunluk: false })}
                                 className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition cursor-pointer"
                             >
                                 İptal
                             </button>
                             <button 
                                 onClick={() => {
-                                    handleAction(confirmModal.id, 'TAM_ODEME');
-                                    setConfirmModal({ open: false, id: null, name: '' });
+                                    handleAction(confirmModal.id, 'TAM_ODEME', null, confirmModal.isGunluk);
+                                    setConfirmModal({ open: false, id: null, name: '', isGunluk: false });
                                 }}
                                 className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm transition cursor-pointer"
                             >
@@ -276,7 +282,7 @@ export default function BugunGidilenlerPage() {
 
                         <div className="flex gap-2">
                             <button 
-                                onClick={() => setPartialModal({ open: false, id: null, name: '', amount: '' })}
+                                onClick={() => setPartialModal({ open: false, id: null, name: '', amount: '', isGunluk: false })}
                                 className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition cursor-pointer"
                             >
                                 Vazgeç
@@ -285,14 +291,14 @@ export default function BugunGidilenlerPage() {
                                 onClick={() => {
                                     if(partialModal.amount && !isNaN(partialModal.amount)) {
                                         // Girilen ödeme miktarının kalan bakiyeyi aşmadığını doğrula
-                                        const client = visitedList.find(c => c.id === partialModal.id);
+                                        const client = visitedList.find(c => c.id === partialModal.id && c.is_gunluk === partialModal.isGunluk);
                                         const amountInput = Number(partialModal.amount);
                                         if (client && amountInput > Number(client.kalan_bakiye)) {
                                             alert(`Hata: Girilen tutar (₺${amountInput}) kalan bakiyeden (₺${client.kalan_bakiye}) fazla olamaz.`);
                                             return;
                                         }
-                                        handleAction(partialModal.id, 'KISMI_ODEME', partialModal.amount);
-                                        setPartialModal({ open: false, id: null, name: '', amount: '' });
+                                        handleAction(partialModal.id, 'KISMI_ODEME', partialModal.amount, partialModal.isGunluk);
+                                        setPartialModal({ open: false, id: null, name: '', amount: '', isGunluk: false });
                                     } else {
                                         alert("Lütfen geçerli bir tutar girin.");
                                     }
