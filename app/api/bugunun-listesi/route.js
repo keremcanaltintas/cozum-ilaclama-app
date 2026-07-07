@@ -7,6 +7,18 @@ export async function GET(request) {
     // Sayfa hangi günü istiyorsa onu alıyoruz (Varsayılan: 6)
     const gun = searchParams.get("gun") || "6";
 
+    // Otomatik veritabanı güncellemesi (Migration)
+    try {
+      await sql`ALTER TABLE musteriler ADD COLUMN IF NOT EXISTS ziyaret_gunleri INTEGER[];`;
+      await sql`
+        UPDATE musteriler 
+        SET ziyaret_gunleri = ARRAY[planlanan_gun] 
+        WHERE ziyaret_gunleri IS NULL AND planlanan_gun IS NOT NULL;
+      `;
+    } catch (e) {
+      console.error("Otomatik veritabanı güncelleme hatası:", e.message);
+    }
+
     // Buluttaki Neon veritabanından müşterileri çekiyoruz
     let rows;
     try {

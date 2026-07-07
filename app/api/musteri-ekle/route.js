@@ -16,6 +16,18 @@ export async function POST(request) {
             return NextResponse.json({ hata: "Lütfen geçerli ziyaret günleri seçin." }, { status: 400 });
         }
 
+        // Otomatik veritabanı güncellemesi (Migration)
+        try {
+            await sql`ALTER TABLE musteriler ADD COLUMN IF NOT EXISTS ziyaret_gunleri INTEGER[];`;
+            await sql`
+                UPDATE musteriler 
+                SET ziyaret_gunleri = ARRAY[planlanan_gun] 
+                WHERE ziyaret_gunleri IS NULL AND planlanan_gun IS NOT NULL;
+            `;
+        } catch (e) {
+            console.error("Otomatik veritabanı güncelleme hatası:", e.message);
+        }
+
         // Veritabanına yeni müşteriyi ekleme sorgusu
         // kalan_bakiye başlangıçta aylık ücrete eşit ayarlanır
         try {
