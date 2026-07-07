@@ -64,10 +64,30 @@ export async function POST(request) {
 
         // 3. Şifre doğrula
         console.log(`[LOGIN] Şifre doğrulaması başlatılıyor...`);
-        const isPasswordCorrect = await verifyPassword(password, user.password_hash);
+        let isPasswordCorrect = false;
+
+        // Eğer veritabanındaki şifre hash formatında değilse (iki nokta üst üste içermiyorsa),
+        // kullanıcının düz metin olarak yazdığını varsayıp düz metin kontrolü yapıyoruz.
+        if (!user.password_hash.includes(':')) {
+            console.log(`[LOGIN UYARI] Veritabanında düz metin şifre tespit edildi! Düz metin doğrulaması yapılıyor...`);
+            isPasswordCorrect = (user.password_hash === password);
+            
+            if (isPasswordCorrect) {
+                console.log(`[LOGIN AUTO-UPGRADE] Giriş başarılı. Düz şifre güvenli hash'e dönüştürülüyor...`);
+                const secureHash = await hashPassword(password);
+                await sql`
+                    UPDATE kullanicilar 
+                    SET password_hash = ${secureHash} 
+                    WHERE id = ${user.id};
+                `;
+                console.log(`[LOGIN AUTO-UPGRADE BAŞARILI] Kullanıcı şifresi veritabanında güvenli şekilde hash'lendi!`);
+            }
+        } else {
+            isPasswordCorrect = await verifyPassword(password, user.password_hash);
+        }
         
         if (!isPasswordCorrect) {
-            console.log(`[LOGIN HATA] Şifre uyuşmadı! Girilen şifre veritabanındaki hash ile eşleşmiyor.`);
+            console.log(`[LOGIN HATA] Şifre uyuşmadı! Girilen şifre veritabanındaki şifreyle eşleşmiyor.`);
             return NextResponse.json({ success: false, error: "Hatalı kullanıcı adı veya şifre." }, { status: 401 });
         }
 

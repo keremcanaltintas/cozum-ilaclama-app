@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }) {
                 </div>
                 {user && (
                     <div className="text-xs font-bold text-emerald-100 bg-emerald-700/50 px-3 py-1 rounded-full border border-emerald-600">
-                        👤 {user.isim}
+                        👤 {user.email === 'usakcozumilaclama' ? 'Böcek Kadir' : user.isim}
                     </div>
                 )}
             </header>
@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }) {
                     <div className="px-6 py-3 bg-emerald-50/50 border-b border-slate-100">
                         <div className="text-[9px] uppercase font-extrabold text-emerald-800 tracking-wider">Aktif Oturum</div>
                         <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5 mt-0.5">
-                            🟢 Hoş Geldin {user.isim}
+                            🟢 Hoş Geldin {user.email === 'usakcozumilaclama' ? 'Böcek Kadir' : user.isim}
                         </div>
                     </div>
                 )}
