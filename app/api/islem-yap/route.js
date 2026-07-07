@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
     try {
         const body = await request.json();
+        const { musteriId, actionType, value, currentDay } = body;
         const isGunluk = body.is_gunluk || body.isGunluk || false;
 
         if (!actionType || (actionType !== 'SIFIRLA' && !musteriId)) {
