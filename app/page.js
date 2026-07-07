@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import MusteriEkleFormu from './MusteriEkleFormu';
 
 export default function Home() {
     const [clients, setClients] = useState([]);
@@ -102,33 +101,10 @@ export default function Home() {
     };
 
     return (
-        <div className="bg-slate-50 min-h-screen font-sans antialiased text-slate-800 pb-12">
+        <div className="font-sans antialiased text-slate-800">
             
-            {/* Üst Bilgi Barı (Header) */}
-            <header className="bg-emerald-800 text-white px-6 py-4 shadow-md sticky top-0 z-40 rounded-b-3xl">
-                <div className="max-w-6xl mx-auto flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-black tracking-tight">Uşak Çözüm</h1>
-                        <p className="text-xs font-medium text-emerald-200 uppercase tracking-widest">Saha Takip Modülü</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <button onClick={fetchClients} className="p-2 hover:bg-emerald-700 rounded-full transition active:scale-95">
-                            🔄
-                        </button>
-                    </div>
-                </div>
-                <div className="max-w-6xl mx-auto mt-4 pt-3 border-t border-emerald-700/50 flex justify-between items-center text-sm">
-                    <div className="flex items-center gap-2 font-medium">
-                        📅 Bugün: {currentDay} Temmuz 2026
-                    </div>
-                    <span className="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
-                    </span>
-                </div>
-            </header>
-
             {/* Ana Gövde Düzeni */}
-            <main className="max-w-6xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 {/* Sol Taraf: Kontroller ve Özet */}
                 <div className="lg:col-span-4 space-y-6">
@@ -146,17 +122,6 @@ export default function Home() {
                             />
                         </div>
                     </div>
-
-                    {/* Yeni Müşteri Kayıt Formu */}
-                    <MusteriEkleFormu 
-                        onSuccess={() => {
-                            fetchClients();
-                            triggerToast('Müşteri başarıyla eklendi!');
-                        }}
-                        onError={(err) => {
-                            triggerToast(err, 'error');
-                        }}
-                    />
 
                     {/* Günlük Özet Dashboard */}
                     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">

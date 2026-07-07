@@ -10,7 +10,7 @@ export async function GET(request) {
     // Buluttaki Neon veritabanından müşterileri çekiyoruz
     const { rows } = await sql`
             SELECT * FROM musteriler 
-            WHERE planlanan_gun = ${parseInt(gun)} OR durum = 'Bekliyor'
+            WHERE ${parseInt(gun)} = ANY(ziyaret_gunleri) OR durum = 'Bekliyor'
             ORDER BY id ASC
         `;
 
