@@ -56,19 +56,19 @@ export default function MusterilerPage() {
             {/* Sayfa Başlığı */}
             <div className="mb-6 flex justify-between items-center">
                 <div>
-                    <h1 className="text-xl font-bold text-slate-800">Müşteriler Rehberi</h1>
-                    <p className="text-xs text-slate-400 font-medium">Uşak Çözüm Müşteri Portföyü</p>
+                    <h1 className="text-xl font-bold text-slate-900 dark:text-white">Müşteriler Rehberi</h1>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Uşak Çözüm Müşteri Portföyü</p>
                 </div>
                 <button 
                     onClick={fetchClients}
-                    className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold px-4 py-2 rounded-xl text-xs transition shadow-2xs active:scale-95 cursor-pointer"
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-semibold px-4 py-2 rounded-xl text-xs transition shadow-2xs active:scale-95 cursor-pointer"
                 >
                     🔄 Yenile
                 </button>
             </div>
 
             {/* Arama ve Filtreleme Modülü */}
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="bg-white p-5 rounded-2xl shadow-md border border-slate-100 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Canlı Arama Girişi */}
                 <div className="flex-1 max-w-md">
                     <input 
@@ -81,38 +81,38 @@ export default function MusterilerPage() {
                 </div>
 
                 {/* Sekme Filtreleri */}
-                <div className="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl border border-slate-100 self-start md:self-auto">
-                    <button 
-                        onClick={() => setStatusFilter('ALL')}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer ${statusFilter === 'ALL' ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                        Tümü
-                    </button>
-                    <button 
-                        onClick={() => setStatusFilter('BEKLEYEN')}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer ${statusFilter === 'BEKLEYEN' ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                        Ödeme Bekleyenler
-                    </button>
-                    <button 
-                        onClick={() => setStatusFilter('ODENDI')}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer ${statusFilter === 'ODENDI' ? 'bg-white text-slate-800 shadow-2xs' : 'text-slate-500 hover:text-slate-700'}`}
-                    >
-                        Ödenenler
-                    </button>
+                <div className="flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800 p-1 rounded-xl border border-slate-200/60 dark:border-slate-700 self-start md:self-auto">
+                    {[{key: 'ALL', label: 'Tümü', count: clients.length}, {key: 'BEKLEYEN', label: 'Bekleyenler', count: clients.filter(c => c.durum !== 'Ödendi').length}, {key: 'ODENDI', label: 'Ödenenler', count: clients.filter(c => c.durum === 'Ödendi').length}].map(f => (
+                        <button 
+                            key={f.key}
+                            onClick={() => setStatusFilter(f.key)}
+                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5 ${
+                                statusFilter === f.key 
+                                    ? 'bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-400 shadow-sm border border-emerald-200/60 dark:border-emerald-800' 
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50 border border-transparent'
+                            }`}
+                        >
+                            {f.label}
+                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${
+                                statusFilter === f.key
+                                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400'
+                                    : 'bg-slate-200/70 dark:bg-slate-600 text-slate-500 dark:text-slate-400'
+                            }`}>{f.count}</span>
+                        </button>
+                    ))}
                 </div>
             </div>
 
             {/* Yükleniyor Durumu */}
             {loading && (
-                <div className="bg-white border border-slate-100 p-12 rounded-2xl text-center text-slate-400 text-sm font-medium">
+                <div className="bg-white border border-slate-200 shadow-md p-12 rounded-2xl text-center text-slate-400 text-sm font-medium">
                     Müşteri listesi veritabanından çekiliyor...
                 </div>
             )}
 
             {/* Hata Durumu */}
             {error && (
-                <div className="bg-rose-50 border border-rose-100 p-12 rounded-2xl text-center">
+                <div className="bg-rose-50 border border-rose-100 shadow-md p-12 rounded-2xl text-center">
                     <span className="text-rose-500 text-3xl block mb-3">⚠️</span>
                     <h3 className="text-sm font-bold text-rose-800 mb-1">Veriler Yüklenemedi</h3>
                     <p className="text-xs text-rose-600 mb-4">Veritabanı bağlantısında bir sorun oluştu.</p>
@@ -127,7 +127,7 @@ export default function MusterilerPage() {
 
             {/* Veri Listeleme */}
             {!loading && !error && (
-                <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-md border border-slate-100 overflow-hidden">
                     {filteredClients.length === 0 ? (
                         <div className="p-12 text-center text-slate-400 text-sm font-medium">
                             Kriterlere uygun herhangi bir müşteri kaydı bulunamadı.
@@ -136,7 +136,7 @@ export default function MusterilerPage() {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 whitespace-nowrap">
+                                    <tr className="bg-slate-50/50 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider border-b border-slate-100 whitespace-nowrap">
                                         <th className="py-4 px-6">Müşteri Adı / Ünvanı</th>
                                         <th className="py-4 px-6">Ziyaret Günleri</th>
                                         <th className="py-4 px-6 text-right">Aylık Ücret</th>

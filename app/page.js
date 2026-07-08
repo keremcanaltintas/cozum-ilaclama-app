@@ -210,7 +210,7 @@ export default function Home() {
 
 
     return (
-        <div className="font-sans antialiased text-slate-800">
+        <div className="font-sans antialiased text-slate-800 dark:text-slate-200">
             
             {/* Ana Gövde Düzeni */}
             <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -219,41 +219,41 @@ export default function Home() {
                 <div className="lg:col-span-4 space-y-6">
                     
                     {/* Arama Modülü */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Müşteri Arama</h3>
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
+                        <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">Müşteri Arama</h3>
                         <div className="relative">
                             <input 
                                 type="text" 
                                 placeholder="Müşteri adı arayın..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 px-4 text-sm text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition"
                             />
                         </div>
                     </div>
 
                     {/* Günlük Özet Dashboard */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Bugünkü Cari Özet</h3>
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
+                        <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-4">Bugünkü Cari Özet</h3>
                         <div className="grid grid-cols-3 gap-2 text-center">
-                            <div className="bg-slate-50 p-3 rounded-xl">
-                                <span className="block text-xs font-medium text-slate-500">MÜŞTERİ</span>
-                                <span className="text-xl font-extrabold text-slate-800">{toplamMusteri}</span>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                                <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Müşteri</span>
+                                <span className="text-xl font-extrabold text-slate-800 dark:text-white">{toplamMusteri}</span>
                             </div>
-                            <div className="bg-slate-50 p-3 rounded-xl">
-                                <span className="block text-xs font-medium text-slate-500">RUTİN ZİY.</span>
-                                <span className="text-xl font-extrabold text-emerald-600">{ziyaretEdilenler}</span>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                                <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Rutin Ziy.</span>
+                                <span className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{ziyaretEdilenler}</span>
                             </div>
-                            <div className="bg-slate-50 p-3 rounded-xl col-span-1">
-                                <span className="block text-xs font-medium text-slate-500">TOPLAM</span>
-                                <span className="text-sm font-black text-rose-600 truncate block">₺{toplamCari}</span>
+                            <div className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700 col-span-1">
+                                <span className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Toplam</span>
+                                <span className="text-sm font-black text-rose-600 dark:text-rose-400 truncate block">₺{toplamCari}</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Günlük Ziyaret Ekleme Paneli */}
-                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Günlük Ziyaret Ekle</h3>
+                    <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
+                        <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3">Günlük Ziyaret Ekle</h3>
                         <form onSubmit={handleAddGunluk} className="space-y-3">
                             <div>
                                 <input 
@@ -261,7 +261,7 @@ export default function Home() {
                                     placeholder="Müşteri Adı / Ünvanı" 
                                     value={gunlukIsim}
                                     onChange={(e) => setGunlukIsim(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition"
                                     required
                                 />
                             </div>
@@ -271,7 +271,7 @@ export default function Home() {
                                     placeholder="Telefon (Örn: 0555...)" 
                                     value={gunlukTelefon}
                                     onChange={(e) => setGunlukTelefon(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition"
                                 />
                             </div>
                             <div>
@@ -280,7 +280,7 @@ export default function Home() {
                                     placeholder="Hizmet Ücreti (₺)" 
                                     value={gunlukUcret}
                                     onChange={(e) => setGunlukUcret(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-500 transition"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-2.5 px-4 text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition"
                                     required
                                 />
                             </div>
@@ -318,9 +318,9 @@ export default function Home() {
                     {/* Rutin Ziyaretler Listesi */}
                     {!loading && !connError && (
                         <div>
-                            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">Rutin İlaçlama Ziyaretleri</h2>
+                            <h2 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3 px-1">Rutin İlaçlama Ziyaretleri</h2>
                             {filteredClients.length === 0 ? (
-                                <div className="bg-white border border-slate-100 p-8 rounded-2xl text-center text-slate-400 text-xs font-medium">
+                                <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 p-8 rounded-2xl text-center text-slate-400 dark:text-slate-500 text-xs font-medium shadow-md">
                                     Bugün için planlanmış rutin ilaçlama kaydı bulunmuyor.
                                 </div>
                             ) : (
@@ -329,11 +329,11 @@ export default function Home() {
                                     return (
                                         <div 
                                             key={client.id}
-                                            className={`bg-white rounded-2xl shadow-sm border mb-4 p-5 transition relative overflow-hidden ${isVisited ? 'border-l-4 border-l-emerald-500 border-slate-200/60 opacity-75' : 'border-slate-100'}`}
+                                            className={`bg-white dark:bg-slate-800 rounded-2xl shadow-md border mb-4 p-5 transition relative overflow-hidden ${isVisited ? 'border-l-4 border-l-emerald-500 border-slate-200/60 dark:border-slate-700 opacity-75' : 'border-slate-200/60 dark:border-slate-700 hover:shadow-lg'}`}
                                         >
                                             <div className="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                                         {client.isim}
                                                         {isVisited && <span className="text-emerald-500 text-sm">✓</span>}
                                                     </h3>
@@ -342,8 +342,8 @@ export default function Home() {
                                                     </span>
                                                 </div>
                                                 <div className="text-right">
-                                                    <span className="text-xs text-slate-400 block font-medium">Kalan Bakiye</span>
-                                                    <span className="text-base font-black text-emerald-700">₺{client.kalan_bakiye}</span>
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Kalan Bakiye</span>
+                                                    <span className="text-base font-black text-emerald-700 dark:text-emerald-400">₺{client.kalan_bakiye}</span>
                                                 </div>
                                             </div>
 
@@ -352,7 +352,7 @@ export default function Home() {
                                                 <button 
                                                     disabled={isVisited}
                                                     onClick={() => triggerPendingVisit(client.id, client.isim, false)}
-                                                    className={`w-full font-bold text-sm py-3 rounded-xl transition flex justify-center items-center gap-2 ${isVisited ? 'bg-emerald-50 text-emerald-600 border border-emerald-100 cursor-not-allowed' : 'bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 cursor-pointer'}`}
+                                                    className={`w-full font-bold text-sm py-3 rounded-xl transition-all duration-150 flex justify-center items-center gap-2 ${isVisited ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/40 cursor-not-allowed' : 'bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:shadow-sm active:scale-[0.98] cursor-pointer'}`}
                                                 >
                                                     {isVisited ? '✓ Gidildi Olarak İşaretlendi' : '📍 Gidildi Olarak İşaretle'}
                                                 </button>
@@ -367,20 +367,20 @@ export default function Home() {
                     {/* Günlük Ziyaretler Listesi */}
                     {!loading && !connError && (
                         <div className="pt-2">
-                            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">Bugünkü Ekstra (Günlük) Ziyaretler</h2>
+                            <h2 className="text-sm font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-3 px-1">Bugünkü Ekstra (Günlük) Ziyaretler</h2>
                             {filteredDailyClients.length === 0 ? (
-                                <div className="bg-white border border-slate-100 p-8 rounded-2xl text-center text-slate-400 text-xs font-medium">
+                                <div className="bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 p-8 rounded-2xl text-center text-slate-400 dark:text-slate-500 text-xs font-medium shadow-md">
                                     Bugün için ekstra planlanmış anlık ziyaret bulunmuyor.
                                 </div>
                             ) : (
                                 filteredDailyClients.map(client => (
                                     <div 
                                         key={client.id}
-                                        className="bg-white rounded-2xl shadow-sm border border-slate-100 mb-4 p-5 transition relative overflow-hidden"
+                                        className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700 mb-4 p-5 transition hover:shadow-lg relative overflow-hidden"
                                     >
                                         <div className="flex justify-between items-start mb-2">
                                             <div>
-                                                <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                                     {client.isim}
                                                     <span className="text-[9px] bg-blue-50 text-blue-600 font-bold border border-blue-100 px-2 py-0.5 rounded-md uppercase tracking-wider">Geçici</span>
                                                 </h3>
@@ -396,8 +396,8 @@ export default function Home() {
                                                 )}
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-xs text-slate-400 block font-medium">Hizmet Ücreti</span>
-                                                <span className="text-base font-black text-emerald-700">₺{client.ucret}</span>
+                                                <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Hizmet Ücreti</span>
+                                                <span className="text-base font-black text-emerald-700 dark:text-emerald-400">₺{client.ucret}</span>
                                             </div>
                                         </div>
 
@@ -405,7 +405,7 @@ export default function Home() {
                                         <div className="mt-4">
                                             <button 
                                                 onClick={() => triggerPendingVisit(client.id, client.isim, true)}
-                                                className="w-full bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 font-bold text-sm py-3 rounded-xl transition flex justify-center items-center gap-2 cursor-pointer"
+                                                className="w-full bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:shadow-sm font-bold text-sm py-3 rounded-xl transition-all duration-150 active:scale-[0.98] flex justify-center items-center gap-2 cursor-pointer"
                                             >
                                                 📍 Gidildi Olarak İşaretle
                                             </button>
