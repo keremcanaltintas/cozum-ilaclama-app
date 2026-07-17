@@ -7,11 +7,21 @@
   --foreground: #171717;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  
+  --color-nestro-bg: #0a291f;
+  --color-nestro-active-bg: #114b37;
+  --color-nestro-active-border: #1a5d46;
+  --color-nestro-text: #8ca39b;
+  --color-nestro-text-active: #ffffff;
+  --color-nestro-btn-dark-bg: #242b27;
+  --color-nestro-btn-dark-border: #363d39;
+  --color-nestro-btn-dark-text: #fca5a5;
+  --color-nestro-light-green: #10b981;
 }
 
 body {
@@ -32,55 +42,55 @@ body {
   color: #f8fafc !important;
 }
 
-/* Sidebar (aside) and Header styling */
+/* Sidebar (aside) and Header styling with Nestro Theme */
 .dark aside {
-  background-color: #1e293b !important; /* slate-800 */
-  border-color: #334155 !important; /* slate-700 */
-  color: #f8fafc !important;
+  background-color: #0a291f !important; /* nestro-bg */
+  border-color: rgba(26, 93, 70, 0.3) !important;
+  color: #8ca39b !important; /* nestro-text */
 }
 
 .dark aside .border-b,
 .dark aside .border-t {
-  border-color: #334155 !important;
+  border-color: rgba(26, 93, 70, 0.2) !important;
 }
 
 .dark aside nav a {
-  color: #cbd5e1 !important; /* slate-300 */
+  color: #8ca39b !important; /* nestro-text */
 }
 
 .dark aside nav a:hover {
-  background-color: #334155 !important; /* slate-700 */
+  background-color: rgba(17, 75, 55, 0.5) !important; /* nestro-active-bg/50 */
   color: #ffffff !important;
 }
 
 .dark aside nav a.bg-emerald-50 {
-  background-color: #064e3b !important; /* emerald-900 */
-  color: #34d399 !important; /* emerald-400 */
-  border-color: #059669 !important; /* emerald-600 */
+  background-color: #114b37 !important; /* nestro-active-bg */
+  color: #ffffff !important;
+  border-color: #1a5d46 !important; /* nestro-active-border */
 }
 
 .dark aside .bg-emerald-50\/50 {
-  background-color: rgba(6, 78, 59, 0.3) !important;
+  background-color: rgba(17, 75, 55, 0.3) !important;
 }
 
 .dark aside .text-emerald-800 {
-  color: #34d399 !important;
+  color: #10b981 !important; /* nestro-light-green */
 }
 
 .dark aside .text-slate-800 {
-  color: #f8fafc !important;
+  color: #ffffff !important;
 }
 
 .dark aside .text-slate-600 {
-  color: #cbd5e1 !important;
+  color: #8ca39b !important;
 }
 
 .dark aside .text-slate-400 {
-  color: #64748b !important;
+  color: rgba(140, 163, 155, 0.6) !important;
 }
 
 .dark aside .bg-slate-50\/50 {
-  background-color: #0f172a !important;
+  background-color: rgba(8, 32, 24, 0.5) !important;
 }
 
 /* Header and Dashboard Content */
@@ -192,7 +202,7 @@ body {
 
 /* Mobile Header */
 .dark header.lg\:hidden {
-  background-color: #064e3b !important;
-  border-bottom: 1px solid #047857 !important;
+  background-color: #0a291f !important;
+  border-bottom: 1px solid rgba(26, 93, 70, 0.3) !important;
 }
 

@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }) {
     }, []);
 
     useEffect(() => {
-        if (pathname !== '/login') {
+        if (pathname !== '/login' && !user) {
             fetch('/api/current-user')
                 .then(res => res.json())
                 .then(data => {
@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }) {
                 })
                 .catch(err => console.error("Kullanıcı yükleme hatası:", err));
         }
-    }, [pathname]);
+    }, [pathname, user]);
 
     // Giriş sayfasında sidebar düzenini gösterme
     if (pathname === '/login') {
@@ -54,18 +54,18 @@ export default function DashboardLayout({ children }) {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col lg:flex-row">
             {/* MOBİL BAŞLIK BAR (HEADER) */}
-            <header className="lg:hidden bg-emerald-800 dark:bg-emerald-950 text-white px-4 py-3 flex justify-between items-center shadow-md z-40 sticky top-0 border-b dark:border-emerald-900/40">
+            <header className="lg:hidden bg-nestro-bg text-white px-4 py-3 flex justify-between items-center shadow-md z-40 sticky top-0 border-b border-nestro-active-border/20">
                 <div className="flex items-center gap-2">
                     <button 
                         onClick={() => setIsOpen(!isOpen)} 
-                        className="p-2 hover:bg-emerald-700 rounded-lg transition"
+                        className="p-2 hover:bg-nestro-active-bg/50 rounded-lg transition"
                     >
                         ☰
                     </button>
                     <img src="/logo.png" alt="Uşak Çözüm" className="h-8 w-auto object-contain brightness-0 invert" />
                 </div>
                 {user && (
-                    <div className="text-xs font-bold text-emerald-100 dark:text-emerald-300 bg-emerald-700/50 dark:bg-emerald-900/40 px-3 py-1 rounded-full border border-emerald-600 dark:border-emerald-800">
+                    <div className="text-xs font-bold text-nestro-text-active bg-nestro-active-bg/50 px-3 py-1 rounded-full border border-nestro-active-border/30">
                         👤 {user.email === 'usakcozumilaclama' ? 'Böcek Kadir' : user.isim}
                     </div>
                 )}
@@ -73,15 +73,15 @@ export default function DashboardLayout({ children }) {
 
             {/* SİDEBAR (MASAÜSTÜ & MOBİL DRAWER) */}
             <aside className={`
-                fixed inset-y-0 left-0 bg-white dark:bg-slate-900 w-64 border-r border-slate-100 dark:border-slate-800 flex flex-col z-50 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:min-h-screen
+                fixed inset-y-0 left-0 bg-nestro-bg w-64 border-r border-nestro-active-border/20 flex flex-col z-50 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:min-h-screen
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
             `}>
                 {/* Logo Bölümü */}
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                    <img src="/logo.png" alt="Uşak Çözüm" className="h-12 w-auto object-contain" />
+                <div className="p-6 border-b border-nestro-active-border/20 flex items-center justify-between">
+                    <img src="/logo.png" alt="Uşak Çözüm" className="h-12 w-auto object-contain brightness-0 invert" />
                     <button 
                         onClick={() => setIsOpen(false)} 
-                        className="lg:hidden p-2 text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition"
+                        className="lg:hidden p-2 text-nestro-text hover:bg-nestro-active-bg/50 hover:text-nestro-text-active rounded-lg transition"
                     >
                         ✕
                     </button>
@@ -89,16 +89,16 @@ export default function DashboardLayout({ children }) {
 
                 {/* Hoş Geldin Mesajı */}
                 {user && (
-                    <div className="px-6 py-3 bg-emerald-50/50 dark:bg-emerald-950/20 border-b border-slate-100 dark:border-slate-800">
-                        <div className="text-[9px] uppercase font-extrabold text-emerald-800 dark:text-emerald-400 tracking-wider">Aktif Oturum</div>
-                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 mt-0.5">
-                            🟢 Hoş Geldin {user.email === 'usakcozumilaclama' ? 'Böcek Kadir' : user.isim}
+                    <div className="px-6 py-3 bg-nestro-active-bg/25 border-b border-nestro-active-border/15">
+                        <div className="text-[9px] uppercase font-extrabold text-nestro-light-green tracking-wider">Aktif Oturum</div>
+                        <div className="text-xs font-bold text-nestro-text-active flex items-center gap-1.5 mt-0.5">
+                            <span className="text-nestro-light-green">●</span> Hoş Geldin {user.email === 'usakcozumilaclama' ? 'Böcek Kadir' : user.isim}
                         </div>
                     </div>
                 )}
 
                 {/* Menü Linkleri */}
-                <nav className="flex-1 p-4 space-y-2 lg:overflow-visible overflow-y-auto bg-white dark:bg-slate-900">
+                <nav className="flex-1 p-4 space-y-2 lg:overflow-visible overflow-y-auto bg-nestro-bg">
                     {menuItems.map((item) => {
                         const active = pathname === item.path;
                         return (
@@ -107,10 +107,10 @@ export default function DashboardLayout({ children }) {
                                 href={item.path}
                                 onClick={() => setIsOpen(false)}
                                 className={`
-                                    flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-200 group
+                                    flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-colors duration-150 group
                                     ${active 
-                                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-400 font-bold border-l-4 border-emerald-600 shadow-xs' 
-                                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200'}
+                                        ? 'bg-nestro-active-bg text-nestro-text-active font-bold border-l-4 border-nestro-active-border shadow-xs' 
+                                        : 'text-nestro-text hover:bg-nestro-active-bg/50 hover:text-nestro-text-active'}
                                 `}
                             >
                                 <span className={`text-xl transition-transform duration-200 group-hover:scale-110 ${active ? 'scale-110' : ''}`}>
@@ -118,7 +118,7 @@ export default function DashboardLayout({ children }) {
                                 </span>
                                 <div>
                                     <div className="text-sm font-semibold">{item.name}</div>
-                                    <div className={`text-[10px] ${active ? 'text-emerald-600 dark:text-emerald-400 font-medium' : 'text-slate-400 dark:text-slate-500 font-normal group-hover:text-slate-500 dark:group-hover:text-slate-400'}`}>
+                                    <div className={`text-[10px] ${active ? 'text-nestro-light-green font-medium' : 'text-nestro-text/60 font-normal group-hover:text-nestro-text/90'}`}>
                                         {item.desc}
                                     </div>
                                 </div>
@@ -127,7 +127,7 @@ export default function DashboardLayout({ children }) {
                     })}
                 </nav>
                 {/* Çıkış Yap Butonu */}
-                <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <div className="p-4 border-t border-nestro-active-border/20 bg-nestro-bg">
                     <button 
                         onClick={async () => {
                             if(confirm("Sistemden çıkış yapmak istediğinize emin misiniz?")) {
@@ -141,7 +141,7 @@ export default function DashboardLayout({ children }) {
                                 }
                             }
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-bold transition duration-200 cursor-pointer"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-nestro-btn-dark-bg text-nestro-btn-dark-text border border-nestro-btn-dark-border hover:border-nestro-btn-dark-text/30 font-bold transition duration-200 cursor-pointer shadow-inner"
                     >
                         <span className="text-xl">🚪</span>
                         <div className="text-sm">Çıkış Yap</div>
@@ -149,11 +149,11 @@ export default function DashboardLayout({ children }) {
                 </div>
 
                 {/* Footer Bölümü */}
-                <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center gap-3">
-                    <img src="/seal.jpg" alt="Mühür" className="h-10 w-10 rounded-full object-cover border border-slate-200 shadow-sm" />
+                <div className="p-4 border-t border-nestro-active-border/15 bg-[#082018]/50 flex items-center gap-3">
+                    <img src="/seal.jpg" alt="Mühür" className="h-10 w-10 rounded-full object-cover border border-nestro-active-border/20 shadow-sm" />
                     <div>
-                        <div className="text-xs font-bold text-slate-800 dark:text-slate-200">Uşak Çözüm</div>
-                        <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Saha Takip Modülü</div>
+                        <div className="text-xs font-bold text-nestro-text-active">Uşak Çözüm</div>
+                        <div className="text-[10px] text-nestro-text/60 font-medium">Saha Takip Modülü</div>
                     </div>
                 </div>
             </aside>
